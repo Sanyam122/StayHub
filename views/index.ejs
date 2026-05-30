@@ -1,0 +1,231 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container-xl py-4">
+
+  <!-- Filters -->
+  <div class="bg-white rounded-4 shadow-sm p-3 mb-5">
+
+    <div class="row align-items-center">
+
+      <div class="col-lg-8">
+
+        <div class="d-flex row  g-3 justify-content-center align-items-center">
+
+          <div class="col-4 col-md-3 col-lg">
+            <div class="filter-item">
+              <i class="fa-solid fa-fire"></i>
+              <p class="small mb-0">Trending</p>
+            </div>
+          </div>
+
+          <div class="col-4 col-md-3 col-lg">
+            <div class="filter-item">
+              <i class="fa-solid fa-city"></i>
+              <p class="small mb-0">Cities</p>
+            </div>
+          </div>
+
+          <div class="col-4 col-md-3 col-lg">
+            <div class="filter-item">
+              <i class="fa-solid fa-bed"></i>
+              <p class="small mb-0">Rooms</p>
+            </div>
+          </div>
+
+          <div class="col-4 col-md-3 col-lg">
+            <div class="filter-item">
+              <i class="fa-solid fa-person-swimming"></i>
+              <p class="small mb-0">Pool</p>
+            </div>
+          </div>
+
+          <div class="col-4 col-md-3 col-lg">
+            <div class="filter-item">
+              <i class="fa-solid fa-cow"></i>
+              <p class="small mb-0">Farms</p>
+            </div>
+          </div>
+
+          <div class="col-4 col-md-3 col-lg">
+            <div class="filter-item">
+              <i class="fa-solid fa-mountain"></i>
+              <p class="small mb-0">Mountains</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="col-lg-4 mt-3 mt-lg-0">
+
+        <div class="d-flex flex-wrap justify-content-lg-end justify-content-center gap-3">
+
+          <div class="form-check form-switch tax-button">
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="switchCheckDefault"
+            >
+
+            <label
+              class="form-check-label"
+              for="switchCheckDefault"
+            >
+              Display price after tax
+            </label>
+
+          </div>
+
+          <button
+            type="button"
+            id="likedCards"
+            class="btn btn-outline-danger"
+          >
+            <i class="fa-solid fa-heart"></i>
+            Shortlisted
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Listings -->
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+
+    <% for(let listing of listings){ %>
+
+      <div class="col liked-card ">
+
+        <div class="card listing-card h-100 ">
+
+          <div class="position-relative">
+
+            <div class="hearticon"></div>
+            <input
+              type="checkbox"
+              class="form-check-input position-absolute top-0 end-0 mt-3 me-3 likebtn opacity-0"
+              id="likebtn-<%= listing.id %>"
+            >
+
+            <a
+              href="/listings/<%= listing.id %>"
+              class="text-decoration-none text-dark"
+            >
+
+              <img
+                src="<%= listing.image.url %>"
+                class="card-img-top"
+                alt="<%= listing.title %>"
+              >
+
+              <div class="card-body">
+
+                <h6 class="card-title">
+                  <%= listing.title %>
+                </h6>
+
+                <p class="card-text listingPrice mb-0 ">
+
+                  ₹ <%= listing.price %>
+
+                  <span class="taxes d-none text-success">
+                    +18% tax
+                  </span>
+
+                </p>
+
+              </div>
+
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    <% } %>
+
+  </div>
+
+</div>
+
+<script>
+  console.log("Script loaded");
+
+const viewLiked = document.getElementById("likedCards");
+const likeBtns = document.querySelectorAll(".likebtn");
+const cards = document.querySelectorAll(".liked-card");
+
+console.log(viewLiked);
+console.log(likeBtns.length);
+console.log(cards.length);
+
+let showLikedOnly = false;
+
+// Handle like/unlike
+likeBtns.forEach((btn) => {
+  btn.addEventListener("change", () => {
+
+    const card = btn.closest(".liked-card");
+    const heart = btn
+      .closest(".position-relative")
+      .querySelector(".heartIcon");
+
+    card.classList.toggle("liked", btn.checked);
+
+    // Heart animation
+    if (heart) {
+      if (btn.checked) {
+        heart.classList.remove("active");
+        void heart.offsetWidth;
+        heart.classList.add("active");
+      } else {
+        heart.classList.remove("active");
+      }
+    }
+
+    // If currently showing shortlisted only,
+    // immediately hide cards that get unchecked
+    if (showLikedOnly) {
+      card.classList.toggle(
+        "d-none",
+        !card.classList.contains("liked")
+      );
+    }
+  });
+});
+
+// Toggle shortlisted view
+viewLiked.addEventListener("click", () => {
+
+  showLikedOnly = !showLikedOnly;
+
+  cards.forEach((card) => {
+
+    if (showLikedOnly) {
+      card.classList.toggle(
+        "d-none",
+        !card.classList.contains("liked")
+      );
+
+      viewLiked.innerHTML =
+        '<i class="fa-solid fa-heart"></i> Show All';
+    } else {
+      card.classList.remove("d-none");
+
+      viewLiked.innerHTML =
+        '<i class="fa-solid fa-heart"></i> Shortlisted';
+    }
+
+  });
+
+});
+</script>

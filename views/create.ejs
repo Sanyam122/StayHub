@@ -1,0 +1,130 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+
+      <!-- Heading -->
+      <div class="text-center mb-4">
+        <h2>Create a New Listing</h2>
+      </div>
+
+      <!-- Form -->
+      <form
+        method="post"
+        action="/listings/createlisting"
+        class="needs-validation"
+        novalidate
+        enctype="multipart/form-data"
+      >
+
+        <!-- Title -->
+        <div class="mb-3">
+          <label class="form-label" for="title">Title</label>
+          <input
+            id="title"
+            name="listing[title]"
+            placeholder="Enter title"
+            type="text"
+            class="form-control"
+            required
+          />
+          <div class="invalid-feedback">
+            Please fill out this field.
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            id="description"
+            name="listing[description]"
+            placeholder="Enter Description"
+            class="form-control"
+            rows="4"
+            required
+          ></textarea>
+          <div class="invalid-feedback">
+            Please fill out this field.
+          </div>
+        </div>
+
+        <!-- Price & Image -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="price">Price</label>
+            <input
+              id="price"
+              name="listing[price]"
+              placeholder="Enter Price"
+              type="number"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">
+              Please fill out this field.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="image">Upload Image</label>
+            <input
+              id="image"
+              type="file"
+              name="listing[image]"
+              class="form-control"
+              accept="image/*"
+              required
+            />
+            <div class="invalid-feedback">
+              Please fill out this field.
+            </div>
+          </div>
+        </div>
+
+        <!-- Location & Country -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="location">Location</label>
+            <input
+              id="location"
+              name="listing[location]"
+              placeholder="Enter Location"
+              type="text"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">
+              Please fill out this field.
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label" for="country">Country</label>
+            <input
+              id="country"
+              name="listing[country]"
+              placeholder="Enter Country"
+              type="text"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">
+              Please fill out this field.
+            </div>
+          </div>
+        </div>
+
+        <!-- Button -->
+        <div class="text-center mt-4">
+          <button type="submit" class="loginButton btn btn-danger btn-outline-danger rounded-pill px-4">
+            Create
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>

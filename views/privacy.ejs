@@ -1,0 +1,75 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container">
+  <form
+    method="put"
+    action="/listings"
+    id="termsAndConditions"
+    class="col-6 mx-auto"
+  >
+    <h3>Terms and Conditions</h3>
+    <br />
+    <p>
+      By accessing and using this website, you agree to comply with and be bound
+      by these Terms and Conditions. By creating an account or using any feature
+      of the platform, you confirm that the information you provide is accurate
+      and complete, and you are responsible for maintaining the confidentiality
+      of your login credentials. Users may create, edit, and manage listings,
+      but all content including images, descriptions, and locations must be
+      genuine, lawful, and not misleading. The platform reserves the right to
+      remove any content or listing that violates policies or applicable laws.
+      Users agree not to misuse the website, attempt unauthorized access, upload
+      harmful content, or engage in any activity that disrupts platform
+      functionality. Reviews and feedback must be honest and respectful, and the
+      platform is not responsible for opinions shared by users. All design
+      elements, logos, and source code belong to the project owner and may not
+      be copied or reused without permission. Personal data is handled according
+      to the Privacy Policy and is not sold or shared without consent. The
+      platform is not liable for data loss, incorrect listings, user disputes,
+      or temporary service interruptions. Accounts may be suspended or
+      terminated if users violate these terms or engage in suspicious activity.
+      These Terms and Conditions may be updated at any time, and continued use
+      of the website indicates acceptance of any changes.
+    </p>
+    <br />
+    <input type="checkbox" name="agree" id="agree" />
+    <label for="agree">I agree to the above terms and conditions</label>
+    <br />
+    <br />
+    <div class="submit">
+      <button type="submit" class="mybtn2">I agree</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById("termsAndConditions");
+  const agree = document.getElementById("agree");
+
+  form.addEventListener("submit", (e) => {
+    if (!agree.checked) {
+      e.preventDefault();
+      alert("Please agree to the terms and conditions to proceed");
+    }
+  });
+</script>
+
+<style>
+  #termsAndConditions {
+    margin: 1.25rem 1rem;
+    padding: 1.5rem;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    border-radius: 20px;
+  }
+
+  .submit {
+    display: flex;
+    justify-content: center;
+  }
+
+  .mybtn2 {
+    box-shadow:
+      rgba(0, 0, 0, 0.19) 0px 10px 20px,
+      rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  }
+</style>

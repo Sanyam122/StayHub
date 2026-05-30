@@ -1,0 +1,290 @@
+<% layout("/layouts/boilerplate") %>
+
+<script>
+  const mapToken = "<%= process.env.MAP_TOKEN %>";
+  const coordinates = <%- JSON.stringify(listing.geometry.coordinates) %>;
+</script>
+
+<div class="container py-4">
+
+  <!-- Listing Header -->
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="fw-bold"><%= listing.title %></h2>
+    </div>
+  </div>
+
+  <!-- Listing Content -->
+
+  <div class="row">
+
+
+<div class="col-12">
+
+  <div class="card shadow-sm border-0">
+
+    <img
+      src="<%= listing.image.url %>"
+      alt="<%= listing.title %>"
+      class="card-img-top listing-image"
+    >
+
+    <div class="card-body">
+
+      <h4 class="fw-bold mb-3">
+        <%= listing.title %>
+      </h4>
+
+      <p class="text-muted mb-2">
+        Owner:
+        <strong>
+          <%= listing.owner ? listing.owner.username : "Sanyam Jain" %>
+        </strong>
+      </p>
+
+      <p class="mb-3">
+        <%= listing.description %>
+      </p>
+
+      <h5 class="text-success mb-3">
+        ₹<%= listing.price %>
+      </h5>
+
+      <p class="mb-3">
+        <i class="fa-solid fa-location-dot me-1"></i>
+        <%= listing.location %>
+      </p>
+
+      <p class="mb-3">
+        <strong>Country:</strong>
+        <%= listing.country %>
+      </p>
+
+    </div>
+
+  </div>
+
+  <% if(currentUser && listing.owner && currentUser._id.equals(listing.owner._id)) { %>
+
+  <div class="d-flex gap-2 mt-3">
+
+    <form
+      method="GET"
+      action="/listings/<%= listing._id %>/edit"
+    >
+      <button
+        type="submit"
+        class="btn btn-outline-primary"
+      >
+        Edit
+      </button>
+    </form>
+
+    <form
+      method="POST"
+      action="/listings/<%= listing._id %>/delete?_method=DELETE"
+    >
+      <button
+        type="submit"
+        class="btn btn-outline-danger"
+        onclick="return confirm('Delete this listing?')"
+      >
+        Delete
+      </button>
+    </form>
+
+  </div>
+
+  <% } %>
+
+</div>
+
+
+  </div>
+
+  <!-- Review Form -->
+
+  <div class="row mt-5 ratingBox">
+
+
+<div class="col-lg-8">
+
+  <div class="card shadow-sm border-0">
+
+    <div class="card-body">
+
+      <h4 class="mb-4 ">
+        Write a Review
+      </h4>
+
+      <form
+        method="POST"
+        action="/listings/<%= listing._id %>/reviews"
+        class="needs-validation"
+        novalidate
+      >
+
+        <fieldset class="starability-basic">
+
+          <legend>Rating</legend>
+
+          <input
+            type="radio"
+            id="no-rate"
+            class="input-no-rate"
+            name="rating"
+            value="0"
+            checked
+          >
+
+          <input type="radio" id="second-rate1" name="rating" value="1">
+          <label for="second-rate1">1 star</label>
+
+          <input type="radio" id="second-rate2" name="rating" value="2">
+          <label for="second-rate2">2 stars</label>
+
+          <input type="radio" id="second-rate3" name="rating" value="3">
+          <label for="second-rate3">3 stars</label>
+
+          <input type="radio" id="second-rate4" name="rating" value="4">
+          <label for="second-rate4">4 stars</label>
+
+          <input type="radio" id="second-rate5" name="rating" value="5">
+          <label for="second-rate5">5 stars</label>
+
+        </fieldset>
+
+        <div class="mt-3">
+
+          <label
+            class="form-label"
+            for="review"
+          >
+            Review
+          </label>
+
+          <textarea
+            id="review"
+            class="form-control"
+            name="review[comment]"
+            rows="4"
+            placeholder="Share your experience..."
+            required
+          ></textarea>
+
+          <div class="invalid-feedback">
+            Please enter a review.
+          </div>
+
+        </div>
+
+        <button
+          class="btn btn-danger mt-3"
+          type="submit"
+        >
+          Post Review
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+  </div>
+
+  <!-- Reviews -->
+
+  <div class="mt-5">
+
+
+<h3 class="mb-4">
+  Reviews
+</h3>
+
+<div class="row g-3">
+
+  <% for(review of listing.reviews){ %>
+
+  <div class="col-md-6 col-lg-4">
+
+    <div class="card h-100 shadow-sm border-0">
+
+      <div class="card-body">
+
+        <h6 class="fw-bold">
+          @<%= review.owner.username %>
+        </h6>
+
+        <p
+          class="starability-result mb-2"
+          data-rating="<%= review.rating %>"
+        ></p>
+
+        <p class="card-text">
+          <%= review.comment %>
+        </p>
+
+      </div>
+
+      <div class="card-footer bg-white border-0">
+
+        <form
+          method="POST"
+          action="/listings/<%= listing._id %>/reviews/<%= review._id %>/delete?_method=DELETE"
+        >
+          <button
+            type="submit"
+            class="btn btn-sm btn-outline-danger"
+          >
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <% } %>
+
+</div>
+
+
+  </div>
+
+  <!-- Location Map -->
+
+  <div class="mt-5">
+
+
+<div class="card shadow-sm border-0">
+
+  <div class="card-body">
+
+    <h3 class="mb-3">
+      Location
+    </h3>
+
+    <p class="text-muted mb-3">
+      <i class="fa-solid fa-location-dot me-2"></i>
+      <%= listing.location %>, <%= listing.country %>
+    </p>
+
+    <div id="map"></div>
+
+  </div>
+
+</div>
+
+
+  </div>
+
+</div>
+
+<script src="/js/map.js"></script>
