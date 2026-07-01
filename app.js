@@ -14,33 +14,27 @@ const LocalStrategy = require("passport-local");
 const methodOverride = require("method-override");
 const ejsMate       = require("ejs-mate");
 
-// Models
 const User = require("./Models/user.js");
 
-// Utils
 const ExpressError = require("./utils/ExpressError.js");
 
-// Routes
 const listingRoutes = require("./routes/listing.js");
 const reviewRoutes  = require("./routes/review.js");
 const userRoutes    = require("./routes/user.js");
 
-// ─── App Init
+
 const app = express();
 
-// ─── Env
 const MONGO_URI      = process.env.MONGO_URI;
 const SESSION_SECRET = process.env.SESSION_SECRET || "changeme";
 const STORE_SECRET   = process.env.STORE_SECRET   || "changeme";
 const PORT           = process.env.PORT           || 8080;
 
-// ─── Database
 mongoose
   .connect(MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-// ─── View Engine
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -53,7 +47,6 @@ app.use(methodOverride("_method"));
 // ─── Session Store
 const store = MongoStore.create({
   mongoUrl:   MONGO_URI,
-  touchAfter: 24 * 3600,
 });
 
 store.on("error", (err) => console.error("Session store error:", err));
