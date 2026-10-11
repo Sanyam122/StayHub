@@ -22,13 +22,21 @@ module.exports.renderLogin = (req, res) => {
 };
 
 module.exports.login = (req, res) => {
+  console.log("LOGIN CONTROLLER REACHED");
+  console.log("Authenticated:", req.isAuthenticated());
+  console.log("User:", req.user);
+  console.log("Session ID:", req.sessionID);
+
   req.flash("success", "Welcome back to Airbnb");
+
   let prevPath = res.locals.prevPath || "/listings";
+
   if (prevPath.includes("delete") || prevPath.includes("review")) {
     let parts = prevPath.split("/");
     let id = parts[2];
     return res.redirect(`/listings/${id}`);
   }
+
   return res.redirect(prevPath);
 };
 

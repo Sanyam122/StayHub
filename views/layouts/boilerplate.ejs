@@ -30,23 +30,14 @@
   </head>
   <body>
     <div class="website">
-      <div class="navbar" style="grid-area: nav">
+      <div class="navbar" style="width: 100%; margin:1.5rem">
         <%- include("../includes/navbar.ejs") %>
       </div>
 
       <div class="main-content container-flex" style="grid-area: main">
-        <%- include("../includes/flash.ejs") %> <%-body %>
-      </div>
-      <div class="web-footer" style="grid-area: foot">
-        <%- include("../includes/footer.ejs") %>
-      </div>
-    </div>
-
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-      crossorigin="anonymous"
-    ></script>
+        <%- body %>  
+        
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/script.js"></script>
   </body>
 </html>

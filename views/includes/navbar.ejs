@@ -1,129 +1,639 @@
-<nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top py-3 w-100">
 
-  <div class="container-fluid px-4">
+<style>
+  .nv {
+    --nv-red: var(--bs-danger, #dc3545);
+    --nv-rgb: var(--bs-danger-rgb, 220, 53, 69);
+    --nv-ink: #222;
+    --nv-muted: #717171;
+    --nv-ease: cubic-bezier(.22, 1, .36, 1);
 
-    <a
-      class="navbar-brand d-flex align-items-center gap-2"
-      href="/listings"
-    >
-      <img
-        src="/logo/Untitled design.png"
-        alt="Explore Logo"
-        height="45"
-        class="brand-logo"
-      >
+    position: relative;
+    z-index: 1030;
+    width: 100%;
+    background: #fff;
+    color: var(--nv-ink);
+  }
 
-      <span class="fw-bold fs-4 text-danger ms-4">
-        Explore
-      </span>
+  .nv *,
+  .nv *::before,
+  .nv *::after {
+    box-sizing: border-box;
+  }
+
+  /* Main navbar: logo | search | account */
+  .nv-top {
+    display: grid;
+    grid-template-columns:
+      minmax(160px, 1fr)
+      minmax(320px, 890px)
+      minmax(80px, 1fr);
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    min-height: 100px;
+    padding: 14px clamp(20px, 4vw, 68px);
+    background: #fff;
+  }
+
+  /* Brand */
+  .nv-brand {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+
+    color: var(--nv-red);
+    text-decoration: none;
+    font-size: 2.1rem;
+    font-weight: 750;
+    line-height: 1;
+    letter-spacing: -.05em;
+    white-space: nowrap;
+
+    transition: transform .3s var(--nv-ease);
+  }
+
+  .nv-brand:hover {
+    color: var(--nv-red);
+    transform: translateY(-1px);
+  }
+
+  .nv-brand i {
+    display: block;
+    font-size: 2.4rem;
+    line-height: 1;
+  }
+
+  /* Search wrapper stays inside .nv-top */
+  .nv-search-row {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+  }
+
+  /* Search capsule */
+  .nv-search {
+    display: grid;
+    grid-template-columns:
+      minmax(120px, 1.2fr)
+      1px
+      minmax(90px, 1fr)
+      1px
+      minmax(100px, 1fr)
+      50px;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    min-height: 72px;
+    padding: 8px 9px 8px 20px;
+
+    border: 1px solid #e7e7e7;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow:
+      0 7px 24px rgba(0, 0, 0, .10),
+      0 1px 3px rgba(0, 0, 0, .035);
+
+    transition:
+      box-shadow .35s var(--nv-ease),
+      transform .35s var(--nv-ease);
+  }
+
+  .nv-search:focus-within {
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, .14),
+      0 0 0 2px rgba(var(--nv-rgb), .10);
+    transform: translateY(-1px);
+  }
+
+  .nv-search-field {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    height: 50px;
+    padding: 0 12px;
+    border-radius: 14px;
+    transition: background .2s ease;
+  }
+
+  .nv-search-field:focus-within {
+    background: #f7f7f7;
+  }
+
+  .nv-search-field label {
+    margin: 0 0 3px;
+    color: #222;
+    font-size: .77rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .nv-search-field input {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #555;
+    font: inherit;
+    font-size: .88rem;
+  }
+
+  .nv-search-field input::placeholder {
+    color: #717171;
+    opacity: 1;
+  }
+
+  .nv-search-divider {
+    width: 1px;
+    height: 34px;
+    background: #ddd;
+  }
+
+  .nv-search-submit {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+
+    border: 0;
+    border-radius: 50%;
+    background: var(--nv-red);
+    color: #fff;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 10px rgba(var(--nv-rgb), .25);
+    cursor: pointer;
+
+    transition:
+      transform .35s var(--nv-ease),
+      box-shadow .25s ease,
+      background .25s ease;
+  }
+
+  .nv-search-submit:hover {
+    background: #c92f40;
+    box-shadow: 0 7px 16px rgba(var(--nv-rgb), .32);
+    transform: scale(1.06);
+  }
+
+  .nv-search-submit:active {
+    transform: scale(.96);
+  }
+
+  .nv-search-submit:focus-visible {
+    outline: 2px solid var(--nv-red);
+    outline-offset: 3px;
+  }
+
+  /* Right-side account control */
+  .nv-right {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .nv-account {
+    position: relative;
+  }
+
+  .nv-user {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 6px 10px;
+    line-height: 1;
+
+    border: 1px solid #e7e7e7;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--nv-ink);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .04);
+    cursor: pointer;
+
+    transition:
+      box-shadow .3s ease,
+      transform .3s var(--nv-ease),
+      border-color .25s ease;
+  }
+
+  .nv-user:hover,
+  .nv-user[aria-expanded="true"] {
+    border-color: #bdbdbd;
+    box-shadow: 0 4px 13px rgba(0, 0, 0, .13);
+  }
+
+  .nv-user:active {
+    transform: scale(.98);
+  }
+
+  .nv-user:focus-visible {
+    outline: 2px solid var(--nv-red);
+    outline-offset: 3px;
+  }
+
+  /* Hide Bootstrap's dropdown caret */
+  .nv-user::after {
+    display: none !important;
+  }
+
+  .nv-avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    line-height: 1;
+    border-radius: 50%;
+    background: var(--nv-red);
+    color: #fff;
+    font-size: .9rem;
+    font-weight: 700;
+    transition: transform .4s var(--nv-ease);
+  }
+
+  .nv-user:hover .nv-avatar {
+    transform: scale(1.06);
+  }
+
+  .nv-name {
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Account dropdown */
+  .nv-menu {
+    min-width: 225px;
+    margin-top: 10px !important;
+    padding: 8px;
+    border: 1px solid rgba(0, 0, 0, .06);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .98);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, .15);
+    z-index: 1060;
+  }
+
+  .nv-menu.show {
+    display: block;
+    animation: nv-menu-in .22s var(--nv-ease) both;
+  }
+
+  .nv-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 12px;
+    border-radius: 10px;
+    color: #222;
+    font-size: .92rem;
+    transition:
+      background .2s ease,
+      color .2s ease,
+      padding-left .25s var(--nv-ease);
+  }
+
+  .nv-menu .dropdown-item:hover,
+  .nv-menu .dropdown-item:focus {
+    padding-left: 16px;
+    color: var(--nv-red);
+    background: rgba(var(--nv-rgb), .07);
+  }
+
+  .nv-menu .dropdown-divider {
+    margin: 6px 4px;
+    border-color: #eee;
+  }
+
+  @keyframes nv-menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-5px) scale(.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Tablet and mobile: search moves to a second row */
+  @media (max-width: 1000px) {
+    .nv-top {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px 18px;
+      padding: 12px 24px 16px;
+    }
+
+    .nv-brand {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .nv-right {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .nv-search-row {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      padding: 2px 0 0;
+    }
+
+    .nv-search {
+      width: min(890px, 100%);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .nv-top {
+      min-height: 0;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      padding: 12px 16px 16px;
+    }
+
+    .nv-brand {
+      gap: 9px;
+      font-size: 1.7rem;
+    }
+
+    .nv-brand i {
+      font-size: 1.95rem;
+    }
+
+    .nv-user {
+      min-height: 44px;
+      padding: 5px 8px;
+    }
+
+    .nv-avatar {
+      width: 31px;
+      height: 31px;
+    }
+
+    .nv-name {
+      max-width: 100px;
+    }
+
+    .nv-search-row {
+      padding: 0;
+    }
+
+    .nv-search {
+      grid-template-columns: minmax(0, 1fr) 46px;
+      min-height: 62px;
+      padding: 6px;
+      border-radius: 22px;
+    }
+
+    .nv-search-field {
+      height: 44px;
+      padding: 0 10px;
+    }
+
+    .nv-search-field label {
+      font-size: .72rem;
+    }
+
+    .nv-search-field input {
+      font-size: .82rem;
+    }
+
+    .nv-search-divider,
+    .nv-search-field-secondary {
+      display: none;
+    }
+
+    .nv-search-submit {
+      width: 46px;
+      height: 46px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .nv-top {
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+
+    .nv-brand {
+      gap: 7px;
+      font-size: 1.5rem;
+    }
+
+    .nv-brand i {
+      font-size: 1.7rem;
+    }
+
+    .nv-name {
+      max-width: 78px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nv *,
+    .nv *::before,
+    .nv *::after {
+      animation: none !important;
+      transition-duration: .01ms !important;
+    }
+  }
+</style>
+
+<nav class="nv sticky-top" id="siteNav" aria-label="Main navigation">
+  <div class="nv-top">
+
+    <!-- Brand: left side -->
+    <a class="nv-brand" href="/listings" aria-label="StayHub home">
+      <i class="fa-solid fa-house" aria-hidden="true"></i>
+      <span>StayHub</span>
     </a>
 
-    <button
-      class="navbar-toggler border-0"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarContent"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div
-      class="collapse navbar-collapse"
-      id="navbarContent"
-    >
-
+    <!-- Search: centered inside .nv-top -->
+    <div class="nv-search-row">
       <form
-        class="d-flex flex-grow-1 justify-content-center my-3 my-lg-0 px-lg-5"
+        class="nv-search"
+        id="navSearch"
         role="search"
+        action="/listings"
+        method="get"
       >
-
-        <div
-          class="input-group"
-          style="max-width:500px;"
-        >
-
+        <div class="nv-search-field">
+          <label for="navSearchQuery">Where</label>
           <input
+            id="navSearchQuery"
             type="search"
-            class="form-control rounded-start-pill"
+            name="q"
             placeholder="Search destinations"
+            aria-label="Search destinations"
+            autocomplete="off"
           >
-
-          <button
-            class="btn btn-danger rounded-end-pill px-4"
-            type="submit"
-          >
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button>
-
         </div>
 
-      </form>
+        <span
+          class="nv-search-divider nv-search-field-secondary"
+          aria-hidden="true"
+        ></span>
 
-      <% if(currentUser) { %>
+        <div class="nv-search-field nv-search-field-secondary">
+          <label for="navCheckIn">When</label>
+          <input
+            id="navCheckIn"
+            type="text"
+            placeholder="Add dates"
+            aria-label="Dates"
+            onfocus="this.type='date'"
+            onblur="if (!this.value) this.type='text'"
+          >
+        </div>
 
-      <div class="dropdown">
+        <span
+          class="nv-search-divider nv-search-field-secondary"
+          aria-hidden="true"
+        ></span>
+
+        <div class="nv-search-field nv-search-field-secondary">
+          <label for="navGuests">Who</label>
+          <input
+            id="navGuests"
+            type="text"
+            inputmode="numeric"
+            placeholder="Add guests"
+            aria-label="Guests"
+          >
+        </div>
 
         <button
-          class="btn btn-outline-secondary rounded-pill dropdown-toggle"
-          type="button"
-          data-bs-toggle="dropdown"
+          class="nv-search-submit"
+          type="submit"
+          aria-label="Search listings"
         >
-
-          <i class="fa-regular fa-user me-2"></i>
-          <%= currentUser.username %>
-
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
         </button>
+      </form>
+    </div>
 
-        <ul class="dropdown-menu dropdown-menu-end shadow">
+    <!-- Account: right side -->
+    <div class="nv-right">
+      <% if (currentUser) { %>
+        <div class="dropdown nv-account">
+          <button
+            class="nv-user dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            aria-label="Open user menu"
+          >
+            <span class="nv-avatar" aria-hidden="true"><%= String(currentUser.username || "U").charAt(0).toUpperCase() %></span>
+            <span class="nv-name"><%= currentUser.username || "User" %></span>
+          </button>
 
-          <li>
-            <a
-              class="dropdown-item"
-              href="/listings/createlisting"
-            >
-              Airbnb Your Home
-            </a>
-          </li>
+          <ul class="dropdown-menu dropdown-menu-end nv-menu">
+            <li>
+              <a class="dropdown-item" href="/listings/createlisting">
+                <i class="fa-solid fa-house-chimney" aria-hidden="true"></i>
+                Airbnb Your Home
+              </a>
+            </li>
 
-          <li><hr class="dropdown-divider"></li>
+            <li><hr class="dropdown-divider"></li>
 
-          <li>
-            <a
-              class="dropdown-item text-danger"
-              href="/logout"
-            >
-              Logout
-            </a>
-          </li>
-
-        </ul>
-
-      </div>
-
+            <li>
+              <a class="dropdown-item" href="/logout">
+                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                Logout
+              </a>
+            </li>
+          </ul>
+        </div>
       <% } else { %>
+        <div class="dropdown nv-account">
+          <button
+            class="nv-user dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            aria-label="Open account menu"
+          >
+            <i
+              class="fa-regular fa-circle-user"
+              aria-hidden="true"
+              style="font-size: 1.55rem"
+            ></i>
+          </button>
 
-      <div class="d-flex flex-column flex-lg-row gap-2">
-
-        <a
-          href="/login"
-          class="btn btn-outline-dark rounded-pill px-4"
-        >
-          Login
-        </a>
-
-        <a
-          href="/signup"
-          class="btn btn-danger rounded-pill px-4"
-        >
-          Sign Up
-        </a>
-
-      </div>
-
+          <ul class="dropdown-menu dropdown-menu-end nv-menu">
+            <li>
+              <a class="dropdown-item" href="/login">Login</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/signup">Sign Up</a>
+            </li>
+          </ul>
+        </div>
       <% } %>
-
     </div>
 
   </div>
-
 </nav>
+
+<script>
+  (function () {
+    const form = document.getElementById("navSearch");
+    const input = document.getElementById("navSearchQuery");
+
+    if (!form || !input) return;
+
+    // Preserve GET /listings?q=... search behavior.
+    form.addEventListener("submit", function (event) {
+      if (input.value.trim()) return;
+
+      event.preventDefault();
+      input.focus();
+
+      if (
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        return;
+      }
+
+      form.animate(
+        [
+          { transform: "translateX(0)" },
+          { transform: "translateX(-4px)" },
+          { transform: "translateX(4px)" },
+          { transform: "translateX(0)" }
+        ],
+        {
+          duration: 260,
+          easing: "ease-out"
+        }
+      );
+    });
+  })();
+</script>

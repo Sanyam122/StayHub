@@ -75,11 +75,30 @@ passport.deserializeUser(User.deserializeUser());
 
 // ─── Flash + Locals
 app.use(flash());
+app.get("/whoami", (req, res) => {
+  res.json({
+    sessionID: req.sessionID,
+    user: req.user ? req.user.username : null,
+    secureCookie: req.session.cookie.secure,
+    nodeEnv: process.env.NODE_ENV || "(not set)",
+  });
+});
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Make the logged-in user available in all EJS templates
 app.use((req, res, next) => {
+  console.log("req.user:", req.user);
+
   res.locals.currentUser = req.user || null;
-  res.locals.success     = req.flash("success");
-  res.locals.error       = req.flash("error");
+
+  next();
+});
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
   next();
 });
 
