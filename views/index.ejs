@@ -1,451 +1,34 @@
 <% layout("/layouts/boilerplate") %>
+<%
+  const pageTitle = "Find Your Perfect Stay | StayHub";
+  const metaDescription = "Browse " + listings.length + " unique stays on StayHub. Filter by trending destinations, cities, mountains, pools, and more. Book your next getaway today.";
+  const ogTitle = "Find Your Perfect Stay | StayHub";
+  const ogDescription = "Browse " + listings.length + " unique stays on StayHub. Filter by trending destinations, cities, mountains, pools, and more.";
+%>
+<link rel="stylesheet" href="/CSS/index.css">
+<script src="/js/index.js" defer></script>
 
-<style>
-  /* =========================================================
-     Stay card — every selector is namespaced with "sc-" and
-     tokens live on .sc-stage, so nothing leaks into Bootstrap,
-     the navbar, the footer or the filter bar.
-     ========================================================= */
-  .sc-stage {
-    --sc-fg: hsl(240 12% 10%);
-    --sc-muted: hsl(240 5% 42%);
-    --sc-line: hsl(240 20% 10% / 0.10);
-    --sc-glass: hsl(0 0% 100% / 0.72);
-    --sc-accent: hsl(354 76% 48%);
-    --sc-btn-bg: hsl(0 0% 98%);
-    --sc-btn-fg: hsl(240 10% 8%);
 
-    /* Concentric radii: inner = outer - padding */
-    --sc-pad: 0.5rem;
-    --sc-r-outer: 1.5rem;
-    --sc-r-inner: calc(var(--sc-r-outer) - var(--sc-pad));
 
-    /* Motion */
-    --sc-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-    --sc-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+<main class="sc-page">
+<script>document.currentScript.parentElement.classList.add("sc-js");</script>
 
-    /* Entrance stagger: first 8 cards only, so long lists don't lag */
-    --sc-delay: calc(min(var(--n, 0), 8) * 70ms);
+<!-- Decorative background -->
+<div class="sc-orb sc-orb-1" aria-hidden="true"></div>
+<div class="sc-orb sc-orb-2" aria-hidden="true"></div>
+<div class="sc-orb sc-orb-3" aria-hidden="true"></div>
 
-    height: 100%;
-    perspective: 1000px;
-    animation: sc-stage-in 0.8s var(--sc-ease-out) var(--sc-delay) backwards;
-  }
-  .sc-stage *, .sc-stage *::before, .sc-stage *::after { box-sizing: border-box; }
+<div class="container-xl">
 
-  /* ---------- Card ---------- */
-  .sc-card {
-    --rx: 0deg;
-    --ry: 0deg;
-    --mx: 50%;
-    --my: 0%;
-    --glow: 0;
-
-    position: relative;
-    isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: var(--sc-pad);
-    border-radius: var(--sc-r-outer);
-    color: var(--sc-fg);
-    background: var(--sc-glass);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    backdrop-filter: blur(18px) saturate(140%);
-    box-shadow:
-      0 1px 0 0 hsl(0 0% 100% / 0.8) inset,
-      0 10px 30px -14px hsl(354 40% 20% / 0.28);
-    transform: rotateX(var(--rx)) rotateY(var(--ry));
-    transition: box-shadow 0.6s var(--sc-ease-out);
-  }
-  .sc-card:hover {
-    box-shadow:
-      0 1px 0 0 hsl(0 0% 100% / 0.9) inset,
-      0 28px 50px -22px color-mix(in srgb, var(--sc-accent) 55%, transparent);
-  }
-
-  /* Hairline border that brightens near the cursor */
-  .sc-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    padding: 1px;
-    border-radius: inherit;
-    pointer-events: none;
-    background:
-      radial-gradient(260px circle at var(--mx) var(--my),
-        color-mix(in srgb, var(--sc-accent) 85%, white) 0%, transparent 65%),
-      var(--sc-line);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-            mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-            mask-composite: exclude;
-  }
-  /* Soft inner spotlight */
-  .sc-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    background: radial-gradient(340px circle at var(--mx) var(--my),
-      color-mix(in srgb, var(--sc-accent) 14%, transparent), transparent 70%);
-    opacity: var(--glow);
-    transition: opacity 0.5s var(--sc-ease-out);
-  }
-
-  /* Whole-card link (one real link, no nested interactive elements) */
-  .sc-stretch {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    border-radius: var(--sc-r-outer);
-  }
-  .sc-stretch:focus-visible { outline: 2px solid var(--sc-accent); outline-offset: 3px; }
-
-  /* ---------- Media ---------- */
-  .sc-media {
-    position: relative;
-    flex-shrink: 0;
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    border-radius: var(--sc-r-inner);
-    background: linear-gradient(110deg,
-      hsl(240 8% 88%) 30%, hsl(240 8% 94%) 50%, hsl(240 8% 88%) 70%);
-    background-size: 200% 100%;
-    animation: sc-shimmer 1.4s linear infinite;
-  }
-  .sc-media.is-loaded { animation: none; background: hsl(240 8% 90%); }
-
-  .sc-img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    opacity: 0;
-    filter: blur(14px);
-    transform: scale(1.12);
-    transition:
-      opacity 0.9s var(--sc-ease-out),
-      filter 1s var(--sc-ease-out),
-      transform 1.4s var(--sc-ease-out);
-  }
-  .sc-media.is-loaded .sc-img { opacity: 1; filter: blur(0); transform: scale(1); }
-  .sc-card:hover .sc-media.is-loaded .sc-img { transform: scale(1.06); }
-
-  .sc-scrim {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(to top, hsl(240 20% 4% / 0.7) 0%, hsl(240 20% 4% / 0.1) 55%, transparent 100%);
-    opacity: 0.85;
-    transition: opacity 0.6s var(--sc-ease-out);
-  }
-  .sc-card:hover .sc-scrim { opacity: 1; }
-
-  /* Tags */
-  .sc-tags {
-    position: absolute;
-    left: 0.75rem;
-    bottom: 0.75rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    transition: transform 0.6s var(--sc-ease-out);
-  }
-  .sc-card:hover .sc-tags { transform: translateY(-3px); }
-
-  .sc-tag {
-    padding: 0.2rem 0.7rem;
-    border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 500;
-    line-height: 1.3;
-    color: hsl(0 0% 98%);
-    background: hsl(0 0% 100% / 0.16);
-    border: 1px solid hsl(0 0% 100% / 0.2);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-  }
-
-  /* Hover CTA (visual only; the stretched link does the navigating) */
-  .sc-layer {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    pointer-events: none;
-    background: hsl(240 20% 4% / 0);
-    -webkit-backdrop-filter: blur(0px);
-    backdrop-filter: blur(0px);
-    transition:
-      background 0.6s var(--sc-ease-out),
-      -webkit-backdrop-filter 0.6s var(--sc-ease-out),
-      backdrop-filter 0.6s var(--sc-ease-out);
-  }
-  .sc-stage:hover .sc-layer,
-  .sc-stage:focus-within .sc-layer {
-    background: hsl(240 20% 4% / 0.28);
-    -webkit-backdrop-filter: blur(3px);
-    backdrop-filter: blur(3px);
-  }
-
-  .sc-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    padding: 0.65rem 1.25rem 0.65rem 1.1rem;
-    border-radius: 999px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--sc-btn-fg);
-    background: var(--sc-btn-bg);
-    box-shadow: 0 12px 28px -8px hsl(0 0% 0% / 0.5);
-    opacity: 0;
-    transform: translateY(14px) scale(0.92);
-    transition:
-      opacity 0.45s var(--sc-ease-out),
-      transform 0.6s var(--sc-ease-spring);
-  }
-  .sc-stage:hover .sc-cta,
-  .sc-stage:focus-within .sc-cta { opacity: 1; transform: translateY(0) scale(1); }
-
-  .sc-cta .sc-arrow { transition: transform 0.5s var(--sc-ease-out); }
-  .sc-stage:hover .sc-cta .sc-arrow { transform: translateX(3px); }
-
-  .sc-icon { width: 1rem; height: 1rem; flex-shrink: 0; }
-  .sc-icon-sm { width: 0.8rem; height: 0.8rem; }
-
-  /* ---------- Body ---------- */
-  .sc-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem 0.75rem 0.6rem;
-  }
-
-  .sc-title {
-    margin: 0;
-    font-size: 1.15rem;
-    line-height: 1.25;
-    font-weight: 600;
-    letter-spacing: -0.015em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background: linear-gradient(90deg, var(--sc-fg) 0%, var(--sc-fg) 50%, var(--sc-accent) 100%);
-    background-size: 220% 100%;
-    background-position: 0% 0;
-    -webkit-background-clip: text;
-            background-clip: text;
-    -webkit-text-fill-color: transparent;
-            color: transparent;
-    transition: background-position 0.9s var(--sc-ease-out);
-  }
-  .sc-card:hover .sc-title { background-position: 100% 0; }
-
-  .sc-text {
-    margin: 0.4rem 0 0;
-    font-size: 0.875rem;
-    line-height: 1.55;
-    color: var(--sc-muted);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-            line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .sc-foot {
-    margin-top: auto;               /* pins the footer so every card in a row lines up */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding-top: 0.9rem;
-    border-top: 1px solid var(--sc-line);
-  }
-
-  .sc-loc {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    min-width: 0;
-    font-size: 0.8rem;
-    color: var(--sc-muted);
-  }
-  .sc-loc i { color: var(--sc-accent); }
-  .sc-loc span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-  .sc-price {
-    flex-shrink: 0;
-    padding: 0.3rem 0.7rem;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    white-space: nowrap;
-    color: var(--sc-fg);
-    background: color-mix(in srgb, var(--sc-fg) 6%, transparent);
-    transition: background 0.4s var(--sc-ease-out);
-  }
-  .sc-price small { font-weight: 400; color: var(--sc-muted); }
-  .sc-price .tax-info { display: none; font-style: normal; font-weight: 400; color: var(--sc-muted); }
-  .sc-card:hover .sc-price { background: color-mix(in srgb, var(--sc-accent) 14%, transparent); }
-
-  /* ---------- Entrance ---------- */
-  .sc-reveal {
-    animation: sc-rise 0.8s var(--sc-ease-out) calc(var(--sc-delay) + 0.2s + var(--i, 0) * 90ms) backwards;
-  }
-  @keyframes sc-stage-in {
-    from { opacity: 0; transform: translateY(28px) scale(0.97); }
-  }
-  @keyframes sc-rise {
-    from { opacity: 0; transform: translateY(14px); }
-  }
-  @keyframes sc-shimmer {
-    to { background-position: -200% 0; }
-  }
-
-  /* ---------- Reduced motion ---------- */
-  @media (prefers-reduced-motion: reduce) {
-    .sc-stage, .sc-reveal, .sc-media { animation: none; }
-    .sc-card, .sc-img, .sc-cta, .sc-tags, .sc-title, .sc-scrim, .sc-layer { transition-duration: 0.01ms; }
-    .sc-card { transform: none !important; }
-    .sc-img { opacity: 1; filter: none; transform: none; }
-  }
-
-  /* =========================================================
-     Category chips (.cg-*) — vanilla port of the ChipGroup:
-     icon morphs into a check, a fill sweeps in, the "+N more"
-     chip folds the row, and layout changes glide on a spring.
-     ========================================================= */
-  .cg {
-    --cg-fg: hsl(240 12% 10%);
-    --cg-muted: hsl(240 5% 42%);
-    --cg-line: hsl(240 20% 10% / 0.14);
-    --cg-accent: hsl(354 76% 48%);
-    --cg-on-accent: hsl(0 0% 100%);
-    --cg-ease: cubic-bezier(0.22, 1, 0.36, 1);
-    --cg-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* JS swaps in a true spring curve */
-  }
-  .cg *, .cg *::before, .cg *::after { box-sizing: border-box; }
-
-  /* Room around the chips so focus rings are never clipped while the height morphs */
-  .cg-frame { margin: -4px; padding: 4px; }
-  .cg-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-
-  .cg-chip {
-    appearance: none;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: none;
-    font: inherit;
-    color: inherit;
-    cursor: pointer;
-    border-radius: 999px;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .cg-chip[hidden] { display: none !important; }
-  .cg-chip:focus-visible { outline: 2px solid var(--cg-accent); outline-offset: 3px; }
-
-  .cg-body {
-    position: relative;
-    isolation: isolate;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.95rem 0.5rem 0.8rem;
-    border-radius: 999px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1.25;
-    color: var(--cg-fg);
-    box-shadow: inset 0 0 0 1px var(--cg-line);
-    transition:
-      color 0.3s ease 0.06s,
-      box-shadow 0.35s var(--cg-ease),
-      transform 0.6s var(--cg-spring);
-  }
-  .cg-chip:hover .cg-body { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cg-accent) 55%, transparent); }
-  .cg-chip:active .cg-body { transform: scale(0.96); transition-duration: 0.3s, 0.35s, 0.12s; }
-
-  /* Fill sweeps in from the left as the chip is selected */
-  .cg-fill {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--cg-accent);
-    clip-path: inset(0 100% 0 0 round 999px);
-    transition: clip-path 0.55s var(--cg-ease);
-  }
-
-  /* Icon and check share one slot: the icon leaves, the check draws itself */
-  .cg-glyph { position: relative; display: grid; place-items: center; width: 1rem; height: 1rem; }
-  .cg-icon, .cg-check { grid-area: 1 / 1; }
-
-  .cg-icon {
-    font-size: 0.85rem;
-    color: var(--cg-accent);
-    transition: opacity 0.25s ease, transform 0.6s var(--cg-spring), filter 0.3s ease;
-  }
-  .cg-check {
-    opacity: 0;
-    transform: scale(0.4);
-    filter: blur(2px);
-    transition: opacity 0.2s ease, transform 0.6s var(--cg-spring), filter 0.3s ease;
-  }
-  .cg-check path {
-    stroke-dasharray: 1 1;
-    stroke-dashoffset: 1;
-    transition: stroke-dashoffset 0.45s var(--cg-ease) 0.08s;
-  }
-
-  .cg-chip[aria-pressed="true"] .cg-body { color: var(--cg-on-accent); box-shadow: inset 0 0 0 1px transparent; }
-  .cg-chip[aria-pressed="true"] .cg-fill { clip-path: inset(0 0 0 0 round 999px); }
-  .cg-chip[aria-pressed="true"] .cg-icon { opacity: 0; transform: scale(0.3) rotate(-25deg); filter: blur(3px); }
-  .cg-chip[aria-pressed="true"] .cg-check { opacity: 1; transform: scale(1); filter: blur(0); }
-  .cg-chip[aria-pressed="true"] .cg-check path { stroke-dashoffset: 0; }
-
-  /* "+N more" chip */
-  .cg-more .cg-body {
-    color: var(--cg-muted);
-    background: color-mix(in srgb, var(--cg-fg) 5%, transparent);
-  }
-  .cg-more:hover .cg-body { color: var(--cg-fg); }
-  .cg-more-text { position: relative; display: block; height: 1.25em; }
-  .cg-line { white-space: nowrap; }
-  .cg.is-ready .cg-line {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-  }
-  .cg-measure {
-    position: absolute;
-    left: 0;
-    top: 0;
-    visibility: hidden;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-
-  /* Listings hidden by a chip filter */
-  .sc-out { display: none !important; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .cg *, .cg *::before, .cg *::after { transition-duration: 0.01ms !important; transition-delay: 0s !important; }
-  }
-</style>
-
-<div class="container-xl py-4">
+  <header class="sc-head">
+    <h1 class="sc-h1 sc-reveal" style="--i: 0">Find a place to stay</h1>
+    <p class="sc-sub sc-reveal" style="--i: 1">
+      <%= listings.length %> <%= listings.length === 1 ? "stay" : "stays" %> to browse. Filter by the kind of trip you want.
+    </p>
+  </header>
 
   <!-- Filters -->
-  <div class="bg-white rounded-4 shadow-sm p-3 mb-5">
+  <div class="sc-filters sc-reveal" style="--i: 2">
     <div class="row align-items-center">
 
       <div class="col-lg-8">
@@ -500,20 +83,16 @@
       </div>
 
       <div class="col-lg-4 mt-3 mt-lg-0">
-        <div class="d-flex flex-wrap justify-content-center justify-content-lg-end align-items-center gap-3">
-
+        <div class="sc-tools">
           <div class="form-check form-switch tax-button mb-0">
             <input class="form-check-input" type="checkbox" id="switchCheckDefault">
-            <label class="form-check-label" for="switchCheckDefault">
-              Display price after tax
-            </label>
+            <label class="form-check-label" for="switchCheckDefault">Show price with tax</label>
           </div>
 
-          <button type="button" id="likedCards" class="btn btn-outline-danger">
+          <button type="button" id="likedCards" class="sc-liked">
             <i class="fa-solid fa-heart"></i>
             Shortlisted
           </button>
-
         </div>
       </div>
 
@@ -532,62 +111,46 @@
     %>
 
       <div class="col liked-card" data-category="<%= categoryText %>">
-        <div class="sc-stage" style="--n: <%= index %>">
+        <div class="sc-stage">
           <article class="sc-card">
 
             <a class="sc-stretch" href="/listings/<%= listing._id %>" aria-label="View <%= listing.title %>"></a>
 
             <div class="sc-media">
               <% if (imgUrl) { %>
-                <img
-                  class="sc-img"
-                  src="<%= imgUrl %>"
-                  alt="<%= listing.title %>"
-                  loading="lazy"
-                />
+                <img class="sc-img" src="<%= imgUrl %>" alt="<%= listing.title %>" loading="lazy" />
               <% } %>
               <div class="sc-scrim"></div>
 
-              <% if (listing.country || typeof listing.category === "string") { %>
-                <div class="sc-tags">
-                  <% if (listing.country) { %><span class="sc-tag"><%= listing.country %></span><% } %>
-                  <% if (typeof listing.category === "string" && listing.category) { %><span class="sc-tag"><%= listing.category %></span><% } %>
-                </div>
+              <% if (typeof listing.category === "string" && listing.category) { %>
+                <div class="sc-tags"><span class="sc-tag"><%= listing.category %></span></div>
               <% } %>
 
-              <div class="sc-layer">
-                <span class="sc-cta" aria-hidden="true">
-                  <svg class="sc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                  </svg>
-                  View stay
-                  <svg class="sc-icon sc-icon-sm sc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </span>
-              </div>
+              <span class="sc-go" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </span>
             </div>
 
             <div class="sc-body">
               <div>
-                <h3 class="sc-title sc-reveal" style="--i:0"><%= listing.title %></h3>
+                <h3 class="sc-title sc-r" style="--k: 0"><%= listing.title %></h3>
+                <% if (listing.location || listing.country) { %>
+                  <div class="sc-loc sc-r" style="--k: 1">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span><%= [listing.location, listing.country].filter(Boolean).join(", ") %></span>
+                  </div>
+                <% } %>
                 <% if (listing.description) { %>
-                  <p class="sc-text sc-reveal" style="--i:1"><%= listing.description %></p>
+                  <p class="sc-text sc-r" style="--k: 2"><%= listing.description %></p>
                 <% } %>
               </div>
 
-              <div class="sc-foot sc-reveal" style="--i:2">
-                <span class="sc-loc">
-                  <i class="fa-solid fa-location-dot"></i>
-                  <span><%= listing.location || listing.country || "" %></span>
-                </span>
-
+              <div class="sc-foot sc-r" style="--k: 3">
                 <% if (hasPrice) { %>
                   <span class="sc-price">
-                    &#8377;<%= Number(listing.price).toLocaleString("en-IN") %>
-                    <small>/ night</small>
-                    <i class="tax-info">&nbsp;+18% GST</i>
+                    <span class="sc-amount">&#8377;<%= Number(listing.price).toLocaleString("en-IN") %></span>
+                    <small>night</small>
+                    <i class="tax-info">+18% GST</i>
                   </span>
                 <% } %>
               </div>
@@ -601,351 +164,11 @@
 
   </div>
 
-  <div id="noResults" class="text-center text-muted py-5" hidden>
-    <p class="mb-2">No stays match these categories yet.</p>
-    <button type="button" id="clearChips" class="btn btn-link p-0">Clear filters</button>
+  <div id="noResults" class="sc-empty" hidden>
+    <p class="sc-empty-title">No stays match yet</p>
+    <p>Try removing a category to see more places.</p>
+    <button type="button" id="clearChips" class="btn">Clear filters</button>
   </div>
 </div>
+</main>
 
-<script>
-  // Every card gets its own image loader and its own tilt state.
-  document.querySelectorAll(".sc-card").forEach(function (card) {
-
-    // ---- Blur-up image reveal ----
-    const media = card.querySelector(".sc-media");
-    const img = card.querySelector(".sc-img");
-    const done = () => media.classList.add("is-loaded");
-    if (!img) done();
-    else if (img.complete && img.naturalWidth) done();
-    else {
-      img.addEventListener("load", done);
-      img.addEventListener("error", done);
-    }
-
-    // ---- Smoothed pointer tilt + cursor-following glow ----
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const MAX = 5;      // max tilt in degrees
-    const EASE = 0.12;  // lower = silkier
-    let tx = 0, ty = 0, cx = 0, cy = 0;
-    let mx = 50, my = 0, gx = 50, gy = 0;
-    let glowT = 0, glowC = 0;
-    let raf = null;
-
-    function tick() {
-      cx += (tx - cx) * EASE;
-      cy += (ty - cy) * EASE;
-      gx += (mx - gx) * 0.18;
-      gy += (my - gy) * 0.18;
-      glowC += (glowT - glowC) * 0.12;
-
-      card.style.setProperty("--rx", cx.toFixed(3) + "deg");
-      card.style.setProperty("--ry", cy.toFixed(3) + "deg");
-      card.style.setProperty("--mx", gx.toFixed(2) + "%");
-      card.style.setProperty("--my", gy.toFixed(2) + "%");
-      card.style.setProperty("--glow", glowC.toFixed(3));
-
-      const settled =
-        Math.abs(tx - cx) < 0.01 && Math.abs(ty - cy) < 0.01 &&
-        Math.abs(mx - gx) < 0.05 && Math.abs(my - gy) < 0.05 &&
-        Math.abs(glowT - glowC) < 0.005;
-
-      if (settled) { raf = null; if (glowT === 0) card.style.willChange = "auto"; }
-      else raf = requestAnimationFrame(tick);
-    }
-    const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
-
-    card.addEventListener("pointermove", function (e) {
-      if (e.pointerType !== "mouse") return;
-      const r = card.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width;
-      const py = (e.clientY - r.top) / r.height;
-      ty = (px - 0.5) * 2 * MAX;
-      tx = (0.5 - py) * 2 * MAX;
-      mx = px * 100;
-      my = py * 100;
-      glowT = 1;
-      card.style.willChange = "transform";
-      kick();
-    });
-
-    card.addEventListener("pointerleave", function () {
-      tx = 0; ty = 0; glowT = 0;
-      kick();
-    });
-  });
-</script>
-
-<script>
-  // Category chips: selection, overflow fold, spring-driven layout glide, listing filter.
-  (function () {
-    const root = document.getElementById("categoryChips");
-    if (!root) return;
-
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const frame = root.querySelector(".cg-frame");
-    const list = root.querySelector(".cg-list");
-    const chips = Array.from(list.querySelectorAll(".cg-chip[data-chip]"));
-    const more = list.querySelector(".cg-more");
-    const moreText = more ? more.querySelector(".cg-more-text") : null;
-    const measure = more ? more.querySelector(".cg-measure") : null;
-    const MAX = parseInt(root.dataset.maxVisible, 10) || chips.length;
-
-    const selected = new Set();
-    let pinned = new Set();   // chips that were selected when the row last folded stay visible
-    let expanded = false;
-    let busy = false;
-    let active = null;
-
-    /* ---------- Springs: simulate a damped spring, hand it to WAAPI/CSS as linear() ---------- */
-    function makeSpring(stiffness, damping) {
-      const dt = 1 / 240;
-      let x = 0, v = 0, t = 0;
-      const xs = [0];
-      for (let i = 0; i < 2400; i++) {
-        v += (-stiffness * (x - 1) - damping * v) * dt;
-        x += v * dt;
-        t += dt;
-        xs.push(x);
-        if (Math.abs(x - 1) < 0.001 && Math.abs(v) < 0.01) break;
-      }
-      xs[xs.length - 1] = 1;
-      const n = Math.min(xs.length, 64);
-      const stops = [];
-      for (let i = 0; i < n; i++) stops.push(xs[Math.round(i * (xs.length - 1) / (n - 1))].toFixed(4));
-      return { duration: Math.round(t * 1000), easing: "linear(" + stops.join(",") + ")" };
-    }
-    const supportsLinear = !!(window.CSS && CSS.supports && CSS.supports("animation-timing-function", "linear(0, 1)"));
-    const EASE_OUT = "cubic-bezier(0.22, 1, 0.36, 1)";
-    const FALLBACK = { duration: 520, easing: EASE_OUT };
-    const MORPH = supportsLinear ? makeSpring(260, 26) : FALLBACK;  // layout glide
-    const SNAP = supportsLinear ? makeSpring(420, 24) : FALLBACK;   // small pops
-    if (supportsLinear) root.style.setProperty("--cg-spring", makeSpring(380, 24).easing);
-
-    const run = (el, keyframes, options) => (reduce ? null : el.animate(keyframes, options));
-    const done = (anim) => (anim ? anim.finished.catch(function () {}) : Promise.resolve());
-
-    /* ---------- Layout helpers ---------- */
-    const shownButtons = () => chips.concat(more ? [more] : []).filter((b) => b.offsetParent !== null);
-    const snapshot = () => new Map(shownButtons().map((b) => [b, b.getBoundingClientRect()]));
-
-    // FLIP: everything that was on screen glides from where it was to where it now is.
-    function flip(first) {
-      const out = [];
-      first.forEach(function (a, el) {
-        if (el.offsetParent === null) return;
-        const b = el.getBoundingClientRect();
-        const dx = a.left - b.left, dy = a.top - b.top;
-        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
-        out.push(done(run(el, [{ transform: "translate(" + dx + "px, " + dy + "px)" }, { transform: "none" }], MORPH)));
-      });
-      return out;
-    }
-
-    function enter(els) {
-      return els.map((el, i) => done(run(
-        el,
-        [
-          { opacity: 0, transform: "scale(0.9)", filter: "blur(4px)" },
-          { opacity: 1, transform: "none", filter: "blur(0px)" }
-        ],
-        { duration: 420, delay: Math.min(i * 40, 300), easing: EASE_OUT, fill: "backwards" }
-      )));
-    }
-
-    // The row's height springs from the old value to the new one, clipping only while it moves.
-    function morphHeight(h0) {
-      const h1 = frame.offsetHeight;
-      if (reduce || Math.abs(h0 - h1) < 1) return Promise.resolve();
-      frame.style.overflow = "hidden";
-      return done(frame.animate([{ height: h0 + "px" }, { height: h1 + "px" }], MORPH))
-        .then(function () { frame.style.overflow = ""; });
-    }
-
-    /* ---------- "+N more" label: slide-swap the text while the chip's width springs ---------- */
-    function textWidth(text) {
-      measure.textContent = text;
-      return measure.getBoundingClientRect().width;
-    }
-    function setMore(text, animated) {
-      if (!more) return;
-      const cur = moreText.querySelector(".cg-line:not([data-leaving])");
-      if (cur && cur.textContent === text) return;
-      const w1 = textWidth(text);
-      if (!animated || reduce || !cur) {
-        if (cur) cur.textContent = text;
-        moreText.style.width = w1 + "px";
-        return;
-      }
-      const w0 = moreText.getBoundingClientRect().width;
-      const next = cur.cloneNode(false);
-      next.textContent = text;
-      moreText.appendChild(next);
-      cur.setAttribute("data-leaving", "");
-      cur.setAttribute("aria-hidden", "true");
-      done(cur.animate(
-        [{ opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }, { opacity: 0, transform: "translateY(-0.3em)", filter: "blur(2px)" }],
-        { duration: 140, easing: "ease-in", fill: "forwards" }
-      )).then(function () { cur.remove(); });
-      next.animate(
-        [{ opacity: 0, transform: "translateY(0.3em)", filter: "blur(4px)" }, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" }],
-        { duration: 220, easing: EASE_OUT, fill: "backwards" }
-      );
-      moreText.style.width = w1 + "px";
-      moreText.animate([{ width: w0 + "px" }, { width: w1 + "px" }], MORPH);
-    }
-
-    const hiddenCount = () => chips.filter(function (c, i) {
-      const v = c.dataset.chip;
-      return !(i < MAX || pinned.has(v) || selected.has(v));
-    }).length;
-
-    async function toggleMore() {
-      if (busy || !more) return;
-      busy = true;
-      const first = snapshot();
-      const h0 = frame.offsetHeight;
-
-      if (!expanded) {
-        expanded = true;
-        const incoming = chips.filter((c) => c.hidden);
-        incoming.forEach((c) => { c.hidden = false; });
-        more.setAttribute("aria-expanded", "true");
-        setMore("Show less", true);
-        await Promise.all(flip(first).concat(enter(incoming), [morphHeight(h0)]));
-      } else {
-        pinned = new Set(selected);
-        const outgoing = chips.filter((c, i) => c.offsetParent !== null && !(i < MAX || pinned.has(c.dataset.chip)));
-        const hadFocus = outgoing.indexOf(document.activeElement) !== -1;
-        await Promise.all(outgoing.map((el) => done(run(
-          el,
-          [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(0.9)" }],
-          { duration: 120, easing: "ease-in", fill: "forwards" }
-        ))));
-        expanded = false;
-        outgoing.forEach((el) => {
-          el.hidden = true;
-          el.getAnimations().forEach((a) => a.cancel());
-        });
-        const left = hiddenCount();
-        more.setAttribute("aria-expanded", "false");
-        if (left === 0) more.hidden = true;
-        else setMore("+" + left + " more", true);
-        if (hadFocus) (more.hidden ? chips[0] : more).focus();
-        await Promise.all(flip(first).concat([morphHeight(h0)]));
-      }
-
-      busy = false;
-      syncTabStops();
-    }
-
-    /* ---------- Selection ---------- */
-    function toggle(el) {
-      const v = el.dataset.chip;
-      const on = selected.has(v);
-      if (on) selected.delete(v); else selected.add(v);
-      el.setAttribute("aria-pressed", String(!on));
-      run(el.querySelector(".cg-body"), [{ transform: "scale(0.94)" }, { transform: "scale(1)" }], SNAP);
-      applyFilter();
-    }
-
-    function clearAll() {
-      selected.clear();
-      chips.forEach((c) => c.setAttribute("aria-pressed", "false"));
-      applyFilter();
-    }
-
-    /* ---------- Listing filter (with the same glide) ---------- */
-    const cols = Array.from(document.querySelectorAll(".liked-card"));
-    const empty = document.getElementById("noResults");
-    const status = document.getElementById("chipStatus");
-
-    function applyFilter() {
-      const words = chips
-        .filter((c) => selected.has(c.dataset.chip))
-        .reduce((all, c) => all.concat(c.dataset.match.split(",")), []);
-
-      const first = new Map(cols.filter((c) => c.offsetParent !== null).map((c) => [c, c.getBoundingClientRect()]));
-      const incoming = [];
-      cols.forEach(function (col) {
-        const cat = col.dataset.category || "";
-        const show = words.length === 0 || words.some((w) => cat.indexOf(w) !== -1);
-        const wasOut = col.classList.contains("sc-out");
-        col.classList.toggle("sc-out", !show);
-        if (show && wasOut) incoming.push(col);
-      });
-
-      first.forEach(function (a, col) {
-        if (col.offsetParent === null) return;
-        const b = col.getBoundingClientRect();
-        const dx = a.left - b.left, dy = a.top - b.top;
-        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
-        run(col, [{ transform: "translate(" + dx + "px, " + dy + "px)" }, { transform: "none" }], MORPH);
-      });
-      incoming.forEach((col, i) => run(
-        col,
-        [{ opacity: 0, transform: "translateY(12px) scale(0.97)" }, { opacity: 1, transform: "none" }],
-        { duration: 420, delay: Math.min(i, 8) * 40, easing: EASE_OUT, fill: "backwards" }
-      ));
-
-      const count = cols.filter((c) => !c.classList.contains("sc-out")).length;
-      if (empty) empty.hidden = count > 0;
-      if (status) status.textContent = "Showing " + count + (count === 1 ? " stay" : " stays");
-    }
-
-    /* ---------- Roving tab stop + arrow-key navigation ---------- */
-    function syncTabStops() {
-      const btns = shownButtons();
-      const stop = btns.indexOf(active) !== -1
-        ? active
-        : (btns.find((b) => b.getAttribute("aria-pressed") === "true") || btns[0]);
-      chips.concat(more ? [more] : []).forEach((b) => { b.tabIndex = b === stop ? 0 : -1; });
-    }
-
-    root.addEventListener("click", function (e) {
-      const btn = e.target.closest(".cg-chip");
-      if (!btn || !root.contains(btn)) return;
-      if (btn === more) toggleMore(); else toggle(btn);
-    });
-
-    root.addEventListener("focusin", function (e) {
-      const btn = e.target.closest(".cg-chip");
-      if (btn) { active = btn; syncTabStops(); }
-    });
-
-    root.addEventListener("keydown", function (e) {
-      const btns = shownButtons();
-      const i = btns.indexOf(document.activeElement);
-      if (i < 0) return;
-      const last = btns.length - 1;
-      const next = {
-        ArrowRight: i === last ? 0 : i + 1,
-        ArrowDown:  i === last ? 0 : i + 1,
-        ArrowLeft:  i === 0 ? last : i - 1,
-        ArrowUp:    i === 0 ? last : i - 1,
-        Home: 0,
-        End: last
-      }[e.key];
-      if (next === undefined) return;
-      e.preventDefault();
-      btns[next].focus();
-    });
-
-    const clear = document.getElementById("clearChips");
-    if (clear) clear.addEventListener("click", clearAll);
-
-    /* ---------- Init ---------- */
-    if (more) {
-      const line = moreText.querySelector(".cg-line");
-      moreText.style.width = textWidth(line.textContent) + "px";
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(function () {
-          const cur = moreText.querySelector(".cg-line:not([data-leaving])");
-          if (cur) moreText.style.width = textWidth(cur.textContent) + "px";
-        });
-      }
-    }
-    root.classList.add("is-ready");
-    syncTabStops();
-  })();
-</script>

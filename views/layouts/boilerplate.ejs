@@ -1,8 +1,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StayHub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= typeof pageTitle !== "undefined" ? pageTitle : "StayHub" %></title>
+    <% if (typeof metaDescription !== "undefined") { %>
+    <meta name="description" content="<%= metaDescription %>">
+    <% } %>
+    <meta property="og:title" content="<%= typeof ogTitle !== "undefined" ? ogTitle : (typeof pageTitle !== "undefined" ? pageTitle : "StayHub") %>">
+    <meta property="og:description" content="<%= typeof ogDescription !== "undefined" ? ogDescription : (typeof metaDescription !== "undefined" ? metaDescription : "StayHub - Unique stays, unforgettable experiences.") %>">
+    <meta property="og:type" content="website">
+    <% if (typeof ogImage !== "undefined") { %>
+    <meta property="og:image" content="<%= ogImage %>">
+    <% } %>
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= typeof ogTitle !== "undefined" ? ogTitle : (typeof pageTitle !== "undefined" ? pageTitle : "StayHub") %>">
+    <meta name="twitter:description" content="<%= typeof ogDescription !== "undefined" ? ogDescription : (typeof metaDescription !== "undefined" ? metaDescription : "StayHub - Unique stays, unforgettable experiences.") %>">
+    <% if (typeof ogImage !== "undefined") { %>
+    <meta name="twitter:image" content="<%= ogImage %>">
+    <% } %>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -17,6 +32,7 @@
       referrerpolicy="no-referrer"
     />
     <link rel="stylesheet" href="/CSS/style.css" />
+    <link rel="stylesheet" href="/CSS/design-system.css" />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -26,18 +42,27 @@
     <link rel="stylesheet" href="/CSS/rating.css" />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.17.0/mapbox-gl.css" rel="stylesheet"/>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+
      <script src="https://api.mapbox.com/mapbox-gl-js/v3.17.0/mapbox-gl.js"></script>
-  </head>
+   </head>
   <body>
     <div class="website">
-      <div class="navbar" style="width: 100%; margin:1.5rem">
+      <header class="site-header" role="banner">
         <%- include("../includes/navbar.ejs") %>
-      </div>
+      </header>
 
       <div class="main-content container-flex" style="grid-area: main">
+        <%- include("../includes/flash.ejs") %>
         <%- body %>  
-        
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/script.js"></script>
+      </div>
+      <%- include("../includes/footer.ejs") %>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="/js/script.js"></script>
+    </div>
   </body>
 </html>

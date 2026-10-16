@@ -1,24 +1,144 @@
 <% layout("/layouts/boilerplate") %>
-<div class="row" style="height: 80vh">
-  <div class="col-6 offset-3 mt-5">
-    <h3 class="text-center"><B>Login</B></h3>
-    <br />
-    <form action="/login" method="POST" class="need-validation" novalidate>
-      <div class="username">
-        <label class="form-label" for="username">Username</label>
-        <input type="text" name="username" class="form-control" required />
-        <div class="invalid-feedback">Please fill out this field.</div>
+<%
+  const pageTitle = "Sign In | StayHub";
+  const metaDescription = "Sign in to your StayHub account to manage bookings, list your space, and save your favorite stays.";
+  const ogTitle = "Sign In | StayHub";
+  const ogDescription = "Sign in to your StayHub account to manage bookings and save favorites.";
+%>
+<link rel="stylesheet" href="/CSS/login.css">
+<script src="/js/login.js" defer></script>
+
+
+<main class="login-page" id="login-page">
+  <!-- Decorative elements -->
+  <div class="login-orb login-orb-one" aria-hidden="true"></div>
+  <div class="login-orb login-orb-two" aria-hidden="true"></div>
+  <div class="login-orb login-orb-three" aria-hidden="true"></div>
+  <div class="login-orb login-orb-four" aria-hidden="true"></div>
+
+  <section class="login-card" id="login-card" aria-labelledby="login-heading">
+
+    <!-- Heading -->
+    <header>
+      <h1 class="login-heading reveal" style="--i: 0" id="login-heading">
+        Welcome back
+      </h1>
+
+      <p class="login-subtitle reveal" style="--i: 1">
+        Sign in to continue your journey with StayHub.
+      </p>
+    </header>
+
+    <!-- Login form -->
+    <form action="/login" method="POST" class="login-form" id="login-form" novalidate>
+
+      <div class="login-field reveal" style="--i: 2">
+        <label class="login-label" for="username">Username</label>
+
+        <div class="login-input-wrap">
+          <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="3" stroke="currentColor" stroke-width="1.7"/>
+            <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+
+          <input
+            class="login-input"
+            type="text"
+            name="username"
+            id="username"
+            placeholder="Enter your username"
+            autocomplete="email"
+            required
+          >
+        </div>
       </div>
-      <br />
-      <div class="password">
-        <label class="form-label" for="password">password</label>
-        <input type="password" name="password" class="form-control" required />
-        <div class="invalid-feedback">Please fill out this field.</div>
+
+      <div class="login-field reveal" style="--i: 3">
+        <label class="login-label" for="password">Password</label>
+
+        <div class="login-input-wrap">
+          <svg class="login-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="4" y="10" width="16" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <circle cx="12" cy="15.5" r="1.2" fill="currentColor"/>
+          </svg>
+
+          <input
+            class="login-input login-input-password"
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+          >
+
+          <button
+            type="button"
+            class="login-password-toggle"
+            id="toggle-password"
+            aria-label="Show password"
+            aria-controls="password"
+            aria-pressed="false"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linejoin="round"
+              />
+              <circle class="eye-pupil" cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/>
+              <path
+                class="eye-slash"
+                d="M4 4l16 16"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
-      <br />
-      <button class="loginButton btn btn-outline-danger btn-danger px-4 rounded-pill mt-2">
-        Login
+
+      <div class="login-options reveal" style="--i: 4">
+        <label class="login-remember">
+          <input type="checkbox" name="remember">
+          <span class="login-check" aria-hidden="true">
+            <svg viewBox="0 0 12 12" fill="none">
+              <path d="m2.5 6.4 2.3 2.3 4.7-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>Remember me</span>
+        </label>
+
+        <a class="login-link" href="/login">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="login-submit reveal" style="--i: 5" id="login-submit">
+        <span class="login-submit-label">Sign in to your account</span>
+
+        <svg class="login-submit-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        <span class="login-spinner" aria-hidden="true"></span>
       </button>
     </form>
-  </div>
-</div>
+
+    <!-- Footer -->
+    <footer class="login-footer" style="--i: 6">
+      <p class="login-signup-text reveal" style="--i: 6">
+        Don't have an account?
+        <a class="login-link" href="/signup">Create an account</a>
+      </p>
+
+      <p class="login-terms reveal" style="--i: 7">
+        By continuing, you agree to our
+        <a href="/terms">Terms of Service</a>
+        and
+        <a href="/privacy">Privacy Policy</a>.
+      </p>
+    </footer>
+  </section>
+</main>

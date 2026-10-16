@@ -1,34 +1,108 @@
-  <footer class="footer">
-    <div class="f-info text-center ">
-      <div class="f-info-socials border">
-        <i class="fa-brands fa-facebook"></i>
-        <i class="fa-brands fa-instagram mx-3"></i>
-        <i class="fa-brands fa-square-linkedin"></i>
-      </div>
-      <div class=" my-3">&copy; Stayhub Private Limited</div>
-      <div class="f-info-links">
-        <a href="/listings/privacy" class="me-3">Privacy</a>
-        <a href="/listings/privacy">Terms and Conditions</a>
-      </div>
+<footer class="ds-footer" role="contentinfo">
+  <div class="ds-footer-inner">
+    <div class="ds-footer-brand">
+      <a href="/listings" class="ds-footer-logo" aria-label="StayHub home">
+        <span class="ds-footer-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M3.5 11.5 12 4l8.5 7.5V20h-6v-5h-5v5h-6v-8.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="m8 8 4-3.5L16 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="ds-footer-name">Stay<span>Hub</span></span>
+      </a>
+      <p class="ds-footer-tagline">Unique stays, unforgettable experiences.</p>
     </div>
-  </footer>
-<style>
-  .footer{
-    border: 2px solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 99vw !important;
-    height: 20%;
-    background-color: #111827;
-    color: white !important;
 
-    a{
-      text-decoration: none !important;
-      color: white;
-    }
+    <div class="ds-footer-contact" aria-label="Contact information">
+      <a href="tel:+91XXXXXXXXXX" class="ds-footer-phone">
+        <i class="fa-solid fa-phone" aria-hidden="true"></i>
+        <span>+91 XXXX XXXXXX</span>
+      </a>
+      <a href="mailto:support@stayhub.example" class="ds-footer-email">
+        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+        <span>support@stayhub.example</span>
+      </a>
+    </div>
+
+    <div class="ds-footer-socials" aria-label="Social links">
+      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="ds-social-link" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="ds-social-link" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="ds-social-link" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+    </div>
+
+    <nav class="ds-footer-links" aria-label="Footer navigation">
+      <a href="/listings/privacy" class="ds-footer-link">Privacy Policy</a>
+      <a href="/listings/privacy" class="ds-footer-link">Terms of Service</a>
+    </nav>
+
+    <div class="ds-footer-copyright">&copy; <%= new Date().getFullYear() %> StayHub Private Limited</div>
+  </div>
+</footer>
+
+<style>
+  .ds-footer {
+    position: relative;
+    isolation: isolate;
+    margin-top: auto;
+    padding: var(--ds-space-10) var(--ds-space-4) var(--ds-space-6);
+    background: #111827;
+    color: #fff;
+    font-family: var(--ds-font);
+    width: 100%;
+    box-sizing: border-box;
   }
-  .f-info{
-      border: none !important;
-    }
+  .ds-footer::before {
+    content: "";
+    position: absolute; inset: 0; z-index: -1;
+    background:
+      radial-gradient(ellipse at 10% 0%, rgba(255, 56, 92, .15), transparent 45%),
+      radial-gradient(ellipse at 90% 100%, rgba(215, 4, 102, .12), transparent 40%);
+  }
+  .ds-footer-inner { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: var(--ds-space-6); text-align: center; }
+
+  .ds-footer-brand { display: flex; flex-direction: column; align-items: center; gap: var(--ds-space-2); }
+  .ds-footer-logo { display: inline-flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-size: 1.5rem; font-weight: 800; line-height: 1; letter-spacing: -.045em; }
+  .ds-footer-logo:hover { color: var(--ds-red); }
+  .ds-footer-logo:focus-visible { outline: 3px solid rgba(255, 56, 92, .5); outline-offset: 3px; border-radius: 4px; }
+  .ds-footer-mark { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--ds-red), var(--ds-red-end)); color: #fff; }
+  .ds-footer-mark svg { width: 22px; height: 22px; }
+  .ds-footer-name span { color: var(--ds-red); }
+  .ds-footer-tagline { margin: 0; font-size: .95rem; color: rgba(255,255,255,.5); }
+
+  .ds-footer-contact { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--ds-space-4) var(--ds-space-6); }
+  .ds-footer-phone, .ds-footer-email { display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,.7); font-size: .9rem; font-weight: 500; text-decoration: none; transition: color var(--ds-transition-fast); }
+  .ds-footer-phone:hover, .ds-footer-email:hover { color: var(--ds-red); }
+  .ds-footer-phone:focus-visible, .ds-footer-email:focus-visible { outline: 3px solid rgba(255, 56, 92, .5); outline-offset: 3px; border-radius: 4px; }
+  .ds-footer-phone i, .ds-footer-email i { color: var(--ds-red); font-size: 1rem; }
+
+  .ds-footer-socials { display: flex; gap: var(--ds-space-4); }
+  .ds-social-link {
+    display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); font-size: 1.1rem;
+    transition: background var(--ds-transition-fast), color var(--ds-transition-fast), transform var(--ds-transition-spring);
+  }
+  .ds-social-link:hover { background: var(--ds-red); color: #fff; transform: translateY(-3px) scale(1.1); }
+  .ds-social-link:focus-visible { outline: 3px solid rgba(255, 56, 92, .5); outline-offset: 3px; }
+
+  .ds-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--ds-space-4) var(--ds-space-6); }
+  .ds-footer-link { color: rgba(255,255,255,.6); font-size: .9rem; font-weight: 500; text-decoration: none; text-underline-offset: 3px; transition: color var(--ds-transition-fast), text-decoration-color var(--ds-transition-fast); }
+  .ds-footer-link:hover { color: var(--ds-red); text-decoration: underline; text-decoration-color: var(--ds-red); }
+  .ds-footer-link:focus-visible { outline: 3px solid rgba(255, 56, 92, .5); outline-offset: 3px; border-radius: 4px; }
+
+  .ds-footer-copyright { font-size: .85rem; font-weight: 500; color: rgba(255,255,255,.5); letter-spacing: .02em; }
+
+  @media (max-width: 480px) {
+    .ds-footer { padding: var(--ds-space-8) var(--ds-space-4) var(--ds-space-5); }
+    .ds-footer-inner { gap: var(--ds-space-5); }
+    .ds-footer-logo { font-size: 1.3rem; }
+    .ds-footer-mark { width: 36px; height: 36px; }
+    .ds-footer-mark svg { width: 20px; height: 20px; }
+    .ds-footer-contact { gap: var(--ds-space-3) var(--ds-space-4); }
+    .ds-footer-links { gap: var(--ds-space-3) var(--ds-space-4); }
+    .ds-social-link { width: 40px; height: 40px; font-size: 1rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ds-footer *, .ds-footer *::before, .ds-footer *::after { transition-duration: .01ms !important; }
+  }
 </style>

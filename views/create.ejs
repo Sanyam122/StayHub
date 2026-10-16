@@ -1,130 +1,112 @@
 <% layout("/layouts/boilerplate") %>
+<%
+  const pageTitle = "Create a New Listing | StayHub";
+  const metaDescription = "List your space on StayHub and start hosting travelers from around the world. Easy setup, global reach, secure payments.";
+  const ogTitle = "Create a New Listing | StayHub";
+  const ogDescription = "List your space on StayHub and start hosting travelers from around the world.";
+%>
+<link rel="stylesheet" href="/CSS/create.css">
+<script src="/js/create.js" defer></script>
 
-<div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+<main class="create-page" id="create-page">
+  <div class="create-orb create-orb-1" aria-hidden="true"></div>
+  <div class="create-orb create-orb-2" aria-hidden="true"></div>
+  <div class="create-orb create-orb-3" aria-hidden="true"></div>
 
-      <!-- Heading -->
-      <div class="text-center mb-4">
-        <h2>Create a New Listing</h2>
+  <div class="create-container">
+    <article class="create-card" id="create-card">
+      <header class="create-header">
+        <h1 class="create-title">Create a New Listing</h1>
+        <p class="create-subtitle">Share your space with travelers from around the world.</p>
+      </header>
+
+      <div class="create-body">
+        <form method="post" action="/listings/createlisting" class="create-form" id="create-form" enctype="multipart/form-data" novalidate>
+          <div class="create-field">
+            <label class="create-label" for="title">Title</label>
+            <div class="create-input-wrap">
+              <svg class="create-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+              <input class="create-input" id="title" name="listing[title]" placeholder="Enter title" type="text" required autocomplete="off">
+            </div>
+            <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a title.</div>
+          </div>
+
+          <div class="create-field">
+            <label class="create-label" for="description">Description</label>
+            <div class="create-input-wrap">
+              <svg class="create-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+              <textarea class="create-textarea" id="description" name="listing[description]" placeholder="Describe your space, amenities, and what makes it special..." rows="5" required></textarea>
+            </div>
+            <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a description.</div>
+          </div>
+
+          <div class="create-row">
+            <div class="create-field">
+              <label class="create-label" for="price">Price per night</label>
+              <div class="create-input-wrap">
+                <svg class="create-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/>
+                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+                <input class="create-input" id="price" name="listing[price]" placeholder="Enter price" type="number" min="0" step="1" required autocomplete="off">
+              </div>
+              <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a valid price.</div>
+            </div>
+
+            <div class="create-field">
+              <label class="create-label" for="image">Upload Image</label>
+              <div class="create-input-wrap">
+                <input class="create-file" id="image" name="listing[image]" type="file" accept="image/*" required>
+              </div>
+              <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please upload an image.</div>
+            </div>
+          </div>
+
+          <div class="create-row">
+            <div class="create-field">
+              <label class="create-label" for="location">Location</label>
+              <div class="create-input-wrap">
+                <svg class="create-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.7"/>
+                  <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.7"/>
+                </svg>
+                <input class="create-input" id="location" name="listing[location]" placeholder="Enter location (city, neighborhood)" type="text" required autocomplete="address-level2">
+              </div>
+              <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a location.</div>
+            </div>
+
+            <div class="create-field">
+              <label class="create-label" for="country">Country</label>
+              <div class="create-input-wrap">
+                <svg class="create-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/>
+                  <path d="M2 12h20M12 2v20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+                <input class="create-input" id="country" name="listing[country]" placeholder="Enter country" type="text" required autocomplete="country">
+              </div>
+              <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a country.</div>
+            </div>
+          </div>
+
+          <div class="create-preview" id="imagePreview" hidden>
+            <label class="create-preview-label">Preview</label>
+            <img class="create-preview-img" src="" alt="Image preview">
+          </div>
+
+          <div class="create-actions">
+            <a href="/listings" class="create-btn create-btn-secondary">Cancel</a>
+            <button type="submit" class="create-btn create-btn-primary" id="create-submit">
+              <span>Create Listing</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </form>
       </div>
-
-      <!-- Form -->
-      <form
-        method="post"
-        action="/listings/createlisting"
-        class="needs-validation"
-        novalidate
-        enctype="multipart/form-data"
-      >
-
-        <!-- Title -->
-        <div class="mb-3">
-          <label class="form-label" for="title">Title</label>
-          <input
-            id="title"
-            name="listing[title]"
-            placeholder="Enter title"
-            type="text"
-            class="form-control"
-            required
-          />
-          <div class="invalid-feedback">
-            Please fill out this field.
-          </div>
-        </div>
-
-        <!-- Description -->
-        <div class="mb-3">
-          <label for="description" class="form-label">Description</label>
-          <textarea
-            id="description"
-            name="listing[description]"
-            placeholder="Enter Description"
-            class="form-control"
-            rows="4"
-            required
-          ></textarea>
-          <div class="invalid-feedback">
-            Please fill out this field.
-          </div>
-        </div>
-
-        <!-- Price & Image -->
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label" for="price">Price</label>
-            <input
-              id="price"
-              name="listing[price]"
-              placeholder="Enter Price"
-              type="number"
-              class="form-control"
-              required
-            />
-            <div class="invalid-feedback">
-              Please fill out this field.
-            </div>
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label class="form-label" for="image">Upload Image</label>
-            <input
-              id="image"
-              type="file"
-              name="listing[image]"
-              class="form-control"
-              accept="image/*"
-              required
-            />
-            <div class="invalid-feedback">
-              Please fill out this field.
-            </div>
-          </div>
-        </div>
-
-        <!-- Location & Country -->
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label" for="location">Location</label>
-            <input
-              id="location"
-              name="listing[location]"
-              placeholder="Enter Location"
-              type="text"
-              class="form-control"
-              required
-            />
-            <div class="invalid-feedback">
-              Please fill out this field.
-            </div>
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <label class="form-label" for="country">Country</label>
-            <input
-              id="country"
-              name="listing[country]"
-              placeholder="Enter Country"
-              type="text"
-              class="form-control"
-              required
-            />
-            <div class="invalid-feedback">
-              Please fill out this field.
-            </div>
-          </div>
-        </div>
-
-        <!-- Button -->
-        <div class="text-center mt-4">
-          <button type="submit" class="loginButton btn btn-danger btn-outline-danger rounded-pill px-4">
-            Create
-          </button>
-        </div>
-
-      </form>
-
-    </div>
+    </article>
   </div>
-</div>
+</main>
+

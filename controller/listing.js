@@ -13,7 +13,8 @@ module.exports.get_create = async (req, res) => {
 };
 
 module.exports.termsAndConditions = async (req, res) => {
-  res.render("privacy.ejs");
+  const isTerms = req.path === "/terms";
+  res.render("privacy.ejs", { isTerms });
 };
 
 module.exports.post_create = async (req, res) => {

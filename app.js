@@ -84,19 +84,9 @@ app.get("/whoami", (req, res) => {
   });
 });
 
-app.use(passport.initialize());
-app.use(passport.session());
-
 // Make the logged-in user available in all EJS templates
 app.use((req, res, next) => {
-  console.log("req.user:", req.user);
-
   res.locals.currentUser = req.user || null;
-
-  next();
-});
-app.use((req, res, next) => {
-  res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
@@ -113,7 +103,8 @@ app.use("/",             userRoutes);
 
 // ─── 404 Handler
 app.all("/{*splat}", (req, res, next) => {
-  next(new ExpressError(404, "Page Not Found"));
+  res.status(404);
+  res.render("Error.ejs", { message: "Page Not Found" });
 });
 
 // ─── Global Error Handler

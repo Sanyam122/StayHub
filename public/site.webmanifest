@@ -1,0 +1,21 @@
+{
+  "name": "StayHub",
+  "short_name": "StayHub",
+  "description": "Unique stays, unforgettable experiences.",
+  "start_url": "/listings",
+  "display": "standalone",
+  "background_color": "#fff7f8",
+  "theme_color": "#ff385c",
+  "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

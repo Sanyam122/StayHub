@@ -1,65 +1,82 @@
 <% if (typeof success !== "undefined" && success.length > 0) { %>
+  <% success.forEach(function (msg) { %>
+<div class="container" style="max-width: 800px; margin-top: var(--ds-space-4);">
 
-<div class="container mt-3">
-
-  <div class="row justify-content-center">
-
-    <div class="col-lg-8">
-
-      <div
-        class="alert alert-success alert-dismissible fade show shadow-sm"
-        role="alert"
-      >
-
-        <i class="fa-solid fa-circle-check me-2"></i>
-        <%= success[0] %>
-
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
-
-      </div>
-
-    </div>
-
+  <div class="ds-alert ds-alert-success" role="status" aria-live="polite">
+    <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+    <span><%= msg %></span>
+    <button type="button" class="ds-alert-close" aria-label="Dismiss">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
   </div>
 
 </div>
-
+  <% }) %>
 <% } %>
 
 <% if (typeof error !== "undefined" && error.length > 0) { %>
+  <% error.forEach(function (msg) { %>
+<div class="container" style="max-width: 800px; margin-top: var(--ds-space-4);">
 
-<div class="container mt-3">
-
-  <div class="row justify-content-center">
-
-    <div class="col-lg-8">
-
-      <div
-        class="alert alert-danger alert-dismissible fade show shadow-sm"
-        role="alert"
-      >
-
-        <i class="fa-solid fa-circle-exclamation me-2"></i>
-        <%= error[0] %>
-
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
-
-      </div>
-
-    </div>
-
+  <div class="ds-alert ds-alert-error" role="alert" aria-live="assertive">
+    <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+    <span><%= msg %></span>
+    <button type="button" class="ds-alert-close" aria-label="Dismiss">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
   </div>
 
 </div>
-
+  <% }) %>
 <% } %>
+
+<style>
+  .ds-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-4) var(--ds-space-5);
+    border-radius: var(--ds-radius-md);
+    font-size: .95rem;
+    line-height: 1.6;
+    animation: ds-rise .6s var(--ds-ease) both;
+    position: relative;
+  }
+  .ds-alert i:first-child {
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 1.1rem;
+  }
+  .ds-alert-error { background: #fff0f1; border: 1px solid #ffcdd2; color: #c62828; }
+  .ds-alert-error i:first-child { color: #c62828; }
+  .ds-alert-success { background: #e8f5e9; border: 1px solid #c8e6c9; color: #2e7d32; }
+  .ds-alert-success i:first-child { color: #2e7d32; }
+  .ds-alert-close {
+    position: absolute;
+    top: 50%;
+    right: var(--ds-space-3);
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: inherit;
+    opacity: .6;
+    cursor: pointer;
+    transition: background var(--ds-transition-fast), opacity var(--ds-transition-fast);
+  }
+  .ds-alert-close:hover { background: rgba(0,0,0,.08); opacity: 1; }
+  .ds-alert-close:focus-visible { outline: 3px solid rgba(255, 56, 92, .5); outline-offset: 2px; opacity: 1; }
+</style>
+
+<script>
+  document.querySelectorAll('.ds-alert-close').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const alert = btn.closest('.ds-alert');
+      if (alert) alert.remove();
+    });
+  });
+</script>

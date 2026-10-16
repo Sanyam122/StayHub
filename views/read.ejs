@@ -1,290 +1,454 @@
 <% layout("/layouts/boilerplate") %>
-
+<%
+  const pageTitle = listing.title + " | StayHub";
+  const metaDescription = listing.description ? listing.description.substring(0, 160) : "View " + listing.title + " on StayHub. " + listing.location + ", " + listing.country + " - " + (listing.price ? "₹" + Number(listing.price).toLocaleString("en-IN") + "/night" : "");
+  const ogTitle = listing.title + " | StayHub";
+  const ogDescription = listing.description ? listing.description.substring(0, 160) : "View " + listing.title + " on StayHub.";
+  const ogImage = (listing.image && listing.image.url) ? listing.image.url : "";
+%>
+<link rel="stylesheet" href="/CSS/rating.css">
 <script>
   const mapToken = "<%= process.env.MAP_TOKEN %>";
   const coordinates = <%- JSON.stringify(listing.geometry.coordinates) %>;
 </script>
 
-<div class="container py-4">
+<style>
+  .read-page {
+    --read-primary: #ff385c;
+    --read-primary-deep: #e61e4d;
+    --read-primary-end: #d70466;
+    --read-primary-soft: rgba(255, 56, 92, .12);
+    --read-text: #222222;
+    --read-muted: #717171;
+    --read-border: #dddddd;
+    --read-surface: #ffffff;
+    --read-background: #fff7f8;
+    --read-radius: 28px;
+    --read-ease: cubic-bezier(.22, 1, .36, 1);
+    --read-spring: cubic-bezier(.34, 1.56, .64, 1);
+    width: 100% !important;
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    padding: 0 0 80px;
+    background:
+      radial-gradient(ellipse at 8% 4%, rgba(255, 56, 92, .13), transparent 40%),
+      radial-gradient(ellipse at 94% 60%, rgba(215, 4, 102, .09), transparent 38%),
+      var(--read-background);
+    color: var(--read-text);
+    font-family: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 
-  <!-- Listing Header -->
+  .read-page *, .read-page *::before, .read-page *::after { box-sizing: border-box; }
 
-  <div class="row mb-4">
-    <div class="col-12">
-      <h2 class="fw-bold"><%= listing.title %></h2>
-    </div>
-  </div>
+  .read-orb { position: absolute; z-index: -1; pointer-events: none; border-radius: 50%; animation: read-orb-in 1.4s var(--read-ease) both, read-float 9s ease-in-out 1.4s infinite; translate: calc(var(--px, 0) * var(--depth, 10) * 1px) calc(var(--py, 0) * var(--depth, 10) * 1px); transition: translate 1.1s var(--read-ease); }
+  .read-orb-1 { --depth: 22; width: 240px; height: 240px; top: 2%; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(255, 56, 92, .20), rgba(255, 56, 92, .05)); border: 1px solid rgba(255, 56, 92, .14); }
+  .read-orb-2 { --depth: -30; width: 320px; height: 320px; top: 38%; right: -150px; background: radial-gradient(circle at 70% 30%, rgba(215, 4, 102, .15), rgba(215, 4, 102, .03)); border: 1px solid rgba(215, 4, 102, .12); animation-delay: .15s, -4s; }
+  .read-orb-3 { --depth: 46; width: 74px; height: 74px; top: 9%; right: 14%; background: linear-gradient(135deg, rgba(255, 56, 92, .30), rgba(215, 4, 102, .06)); animation-delay: .3s, -2s; }
 
-  <!-- Listing Content -->
+  .read-container { max-width: 1200px; margin: 0 auto; padding: 0 var(--ds-space-4); }
 
-  <div class="row">
+  .read-header { padding: var(--ds-space-8) var(--ds-space-4) var(--ds-space-6); }
+  .read-title { margin: 0; font-size: clamp(2rem, 4vw, 2.9rem); font-weight: 800; line-height: 1.1; letter-spacing: -.045em; color: var(--read-text); animation: read-rise .9s var(--read-ease) both; animation-delay: .12s; }
 
+  .read-grid { display: grid; grid-template-columns: 1fr; gap: var(--ds-space-6); }
+  @media (min-width: 992px) { .read-grid { grid-template-columns: 1fr 380px; align-items: start; } }
 
-<div class="col-12">
+  .read-main { display: flex; flex-direction: column; gap: var(--ds-space-6); }
 
-  <div class="card shadow-sm border-0">
+  .read-gallery { position: relative; border-radius: var(--read-radius); overflow: hidden; background: var(--read-surface); box-shadow: var(--ds-shadow-card); }
+  .read-gallery-img { width: 100%; height: 480px; object-fit: cover; }
+  @media (max-width: 768px) { .read-gallery-img { height: 320px; } }
 
-    <img
-      src="<%= listing.image.url %>"
-      alt="<%= listing.title %>"
-      class="card-img-top listing-image"
-    >
+  .read-gallery-overlay {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(to top, rgba(60, 8, 24, .55) 0%, transparent 55%);
+    opacity: .7; transition: opacity .6s var(--read-ease);
+  }
+  .read-gallery:hover .read-gallery-overlay { opacity: 1; }
 
-    <div class="card-body">
+  .read-card {
+    position: relative;
+    background: var(--read-surface);
+    border-radius: var(--read-radius);
+    box-shadow: var(--ds-shadow-card);
+    border: 1px solid rgba(255,255,255,.9);
+    overflow: hidden;
+    transition: transform var(--ds-transition-slow), box-shadow var(--ds-transition-slow);
+  }
+  .read-card:hover { transform: translateY(-4px); box-shadow: var(--ds-shadow-card-hover); }
 
-      <h4 class="fw-bold mb-3">
-        <%= listing.title %>
-      </h4>
+  .read-card-header { padding: var(--ds-space-6); border-bottom: 1px solid var(--ds-line); }
+  .read-card-body { padding: var(--ds-space-6); }
 
-      <p class="text-muted mb-2">
-        Owner:
-        <strong>
-          <%= listing.owner ? listing.owner.username : "Sanyam Jain" %>
-        </strong>
-      </p>
+  .read-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-3); margin-bottom: var(--ds-space-4); }
+  .read-price { display: inline-flex; align-items: baseline; gap: var(--ds-space-2); }
+  .read-amount { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; color: var(--read-text); transition: color var(--ds-transition-base), transform var(--ds-transition-spring); }
+  .read-card:hover .read-amount { color: var(--read-primary); transform: scale(1.04); }
+  .read-price small { font-size: .9rem; font-weight: 600; color: var(--read-muted); }
+  .read-location { display: inline-flex; align-items: center; gap: .4rem; color: var(--read-muted); font-size: .9rem; font-weight: 600; }
+  .read-location i { color: var(--read-primary); font-size: .85rem; transition: transform .5s var(--read-spring); }
+  .read-card:hover .read-location i { transform: translateY(-2px) scale(1.2); }
 
-      <p class="mb-3">
-        <%= listing.description %>
-      </p>
+  .read-description { font-size: 1rem; line-height: 1.75; color: var(--read-muted); }
+  .read-description strong { color: var(--read-text); }
 
-      <h5 class="text-success mb-3">
-        ₹<%= listing.price %>
-      </h5>
+  .read-owner { display: flex; align-items: center; gap: var(--ds-space-3); margin-top: var(--ds-space-4); padding-top: var(--ds-space-4); border-top: 1px solid var(--ds-line); }
+  .read-avatar {
+    display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px;
+    border-radius: 50%; background: linear-gradient(135deg, var(--read-primary), var(--read-primary-end));
+    color: #fff; font-size: 1.1rem; font-weight: 800;
+    transition: transform .5s var(--read-spring);
+  }
+  .read-card:hover .read-avatar { transform: scale(1.08) rotate(-5deg); }
+  .read-owner-name { font-weight: 700; color: var(--read-text); }
+  .read-owner-label { font-size: .85rem; color: var(--read-muted); }
 
-      <p class="mb-3">
-        <i class="fa-solid fa-location-dot me-1"></i>
-        <%= listing.location %>
-      </p>
+  .read-divider { position: relative; margin: var(--ds-space-6) 0; }
+  .read-divider::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--ds-line); transform-origin: center; animation: read-line 1.1s var(--read-ease) both; }
 
-      <p class="mb-3">
-        <strong>Country:</strong>
-        <%= listing.country %>
-      </p>
+  .read-actions { display: flex; gap: var(--ds-space-3); flex-wrap: wrap; }
+  .read-btn {
+    --mx: 50%; --my: 50%;
+    position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    padding: .75rem 1.25rem; border: 0; border-radius: 16px; min-width: 140px;
+    font-weight: 700; font-size: .9rem; letter-spacing: .1px; cursor: pointer;
+    transition: box-shadow var(--ds-transition-base), transform var(--ds-transition-base);
+    isolation: isolate; overflow: hidden; -webkit-tap-highlight-color: transparent;
+  }
+  .read-btn-primary {
+    color: #fff;
+    background: radial-gradient(circle at var(--mx) var(--my), #ff385c 0%, #e61e4d 28%, #d70466 52%, #bd1e59 100%);
+    box-shadow: 0 8px 18px rgba(255, 56, 92, .28);
+  }
+  .read-btn-primary::before { content: ""; position: absolute; top: -70%; left: -35%; z-index: -1; width: 24%; height: 240%; background: rgba(255,255,255,.24); transform: rotate(22deg) translateX(-250%); transition: transform .85s var(--read-ease); pointer-events: none; }
+  .read-btn-primary:hover { box-shadow: 0 14px 26px rgba(255, 56, 92, .36); transform: translateY(-2px); }
+  .read-btn-primary:hover::before { transform: rotate(22deg) translateX(850%); }
+  .read-btn-primary:active { transform: translateY(0) scale(.97); box-shadow: 0 5px 12px rgba(255, 56, 92, .26); }
+  .read-btn-primary .ripple { position: absolute; z-index: -1; width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,.45); transform: translate(-50%,-50%) scale(0); animation: read-ripple .75s var(--read-ease) forwards; pointer-events: none; }
+  .read-btn-danger { color: #fff; background: linear-gradient(135deg, #ff385c, #d70466); box-shadow: 0 8px 18px rgba(255, 56, 92, .28); }
+  .read-btn-danger:hover { background: linear-gradient(135deg, #e61e4d, #bd1e59); transform: translateY(-2px); box-shadow: 0 14px 26px rgba(255, 56, 92, .36); }
+  .read-btn-danger:active { transform: translateY(0) scale(.97); }
+  .read-btn-secondary { color: var(--read-text); background: #fff; border: 1px solid var(--read-border); }
+  .read-btn-secondary:hover { color: var(--read-primary); border-color: var(--read-primary); background: #fffafa; }
+  .read-btn-secondary:active { transform: scale(.97); }
+  .read-btn:focus-visible { outline: 3px solid rgba(255, 56, 92, .4); outline-offset: 3px; }
 
-    </div>
+  .read-reviews-section { margin-top: var(--ds-space-8); }
+  .read-section-title { margin: 0 0 var(--ds-space-6); font-size: 1.4rem; font-weight: 800; letter-spacing: -.03em; color: var(--read-text); }
 
-  </div>
+  .read-review-card {
+    background: var(--read-surface);
+    border-radius: var(--read-radius);
+    box-shadow: var(--ds-shadow-card);
+    border: 1px solid rgba(255,255,255,.9);
+    overflow: hidden;
+    transition: transform var(--ds-transition-base), box-shadow var(--ds-transition-base);
+  }
+  .read-review-card:hover { transform: translateY(-3px); box-shadow: var(--ds-shadow-card-hover); }
+  .read-review-body { padding: var(--ds-space-5); }
+  .read-review-header { display: flex; align-items: center; justify-content: space-between; gap: var(--ds-space-3); margin-bottom: var(--ds-space-3); flex-wrap: wrap; }
+  .read-review-author { display: flex; align-items: center; gap: var(--ds-space-2); }
+  .read-review-avatar {
+    display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--read-primary), var(--read-primary-end));
+    color: #fff; font-size: .9rem; font-weight: 800;
+    transition: transform .5s var(--read-spring);
+  }
+  .read-review-card:hover .read-review-avatar { transform: scale(1.1) rotate(-5deg); }
+  .read-review-name { font-weight: 700; color: var(--read-text); }
+  .read-review-rating { display: flex; align-items: center; gap: .3rem; }
+  .read-review-comment { font-size: .95rem; line-height: 1.7; color: var(--read-muted); }
+  .read-review-footer { padding: var(--ds-space-3) var(--ds-space-5); border-top: 1px solid var(--ds-line); background: var(--read-paper); }
+  .read-delete-btn {
+    display: inline-flex; align-items: center; gap: .4rem; padding: .5rem .85rem;
+    border: 0; border-radius: 12px; background: transparent; color: var(--read-muted);
+    font-weight: 600; font-size: .85rem; cursor: pointer;
+    transition: color var(--ds-transition-fast), background var(--ds-transition-fast), transform var(--ds-transition-spring);
+  }
+  .read-delete-btn:hover { color: var(--read-primary-end); background: var(--read-red-soft); transform: scale(1.05); }
+  .read-delete-btn:active { transform: scale(.95); }
+  .read-delete-btn:focus-visible { outline: 3px solid rgba(255, 56, 92, .4); outline-offset: 3px; }
 
-  <% if(currentUser && listing.owner && currentUser._id.equals(listing.owner._id)) { %>
+  .read-review-form {
+    background: var(--read-surface);
+    border-radius: var(--read-radius);
+    box-shadow: var(--ds-shadow-card);
+    border: 1px solid rgba(255,255,255,.9);
+    overflow: hidden;
+  }
+  .read-review-form-body { padding: var(--ds-space-6); }
+  .read-review-form-title { margin: 0 0 var(--ds-space-5); font-size: 1.25rem; font-weight: 800; letter-spacing: -.02em; color: var(--read-text); }
 
-  <div class="d-flex gap-2 mt-3">
+  .read-rating-field { margin-bottom: var(--ds-space-5); }
+  .read-rating-label { display: block; margin-bottom: var(--ds-space-3); color: #484848; font-size: 13px; font-weight: 700; letter-spacing: .015em; }
+  .read-starability { display: flex; gap: 8px; }
+  .read-starability input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .read-starability label {
+    display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; cursor: pointer;
+    border-radius: 50%; background: #fafafa; border: 1px solid var(--read-border);
+    transition: background .3s ease, border-color .3s ease, transform .4s var(--read-spring), box-shadow .3s ease;
+  }
+  .read-starability label svg { width: 22px; height: 22px; stroke: var(--read-border); fill: none; transition: stroke .3s ease, fill .3s ease, transform .5s var(--read-spring); }
+  .read-starability input:focus-visible + label { outline: 3px solid rgba(255, 56, 92, .4); outline-offset: 3px; }
+  .read-starability label:hover { background: #fff; border-color: var(--read-primary); transform: scale(1.12); }
+  .read-starability label:hover svg { stroke: var(--read-primary); fill: var(--read-primary); transform: scale(1.2) rotate(-10deg); }
+  .read-starability input:checked ~ label svg,
+  .read-starability input:checked + label svg { stroke: var(--read-primary); fill: var(--read-primary); }
+  .read-starability input:checked + label { background: var(--read-red-soft); border-color: var(--read-primary); }
 
-    <form
-      method="GET"
-      action="/listings/<%= listing._id %>/edit"
-    >
-      <button
-        type="submit"
-        class="btn btn-outline-primary"
-      >
-        Edit
-      </button>
-    </form>
+  .read-comment-field { margin-bottom: var(--ds-space-5); }
+  .read-comment-label { display: block; margin-bottom: var(--ds-space-2); color: #484848; font-size: 13px; font-weight: 700; letter-spacing: .015em; }
+  .read-comment-input-wrap { position: relative; }
+  .read-comment-textarea {
+    display: block; width: 100%; min-height: 120px; padding: 14px 16px;
+    color: var(--read-text); background: #fafafa; border: 1px solid var(--read-border);
+    border-radius: 15px; outline: none; font: inherit; font-size: 15px; resize: vertical;
+    transition: border-color .3s ease, background .3s ease, box-shadow .4s var(--read-ease), transform .4s var(--read-ease);
+  }
+  .read-comment-textarea::placeholder { color: #a8a8a8; opacity: 1; transition: opacity .3s ease, transform .4s var(--read-ease); }
+  .read-comment-textarea:focus::placeholder { opacity: .45; transform: translateX(5px); }
+  .read-comment-textarea:hover { border-color: #b8b8b8; background: #fff; }
+  .read-comment-textarea:focus { background: #fff; border-color: var(--read-primary); box-shadow: 0 0 0 4px var(--read-primary-soft), 0 8px 20px rgba(255, 56, 92, .08); transform: translateY(-2px); }
 
-    <form
-      method="POST"
-      action="/listings/<%= listing._id %>/delete?_method=DELETE"
-    >
-      <button
-        type="submit"
-        class="btn btn-outline-danger"
-        onclick="return confirm('Delete this listing?')"
-      >
-        Delete
-      </button>
-    </form>
+  .read-map-card {
+    background: var(--read-surface);
+    border-radius: var(--read-radius);
+    box-shadow: var(--ds-shadow-card);
+    border: 1px solid rgba(255,255,255,.9);
+    overflow: hidden;
+  }
+  .read-map-header { padding: var(--ds-space-5) var(--ds-space-6); border-bottom: 1px solid var(--ds-line); }
+  .read-map-title { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -.02em; color: var(--read-text); }
+  .read-map-location { margin: var(--ds-space-2) 0 0; color: var(--read-muted); font-size: .9rem; }
+  .read-map-location i { color: var(--read-primary); }
+  .read-map-container { height: 360px; width: 100%; }
+  @media (max-width: 768px) { .read-map-container { height: 300px; } }
 
-  </div>
+  .read-sidebar { display: flex; flex-direction: column; gap: var(--ds-space-6); }
+  .read-sidebar-sticky { position: sticky; top: 100px; }
 
-  <% } %>
+  @keyframes read-orb-in { from { opacity: 0; scale: .5; } to { opacity: 1; scale: 1; } }
+  @keyframes read-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -18px, 0); } }
+  @keyframes read-rise { from { opacity: 0; transform: translateY(16px); filter: blur(3px); } to { opacity: 1; transform: none; filter: blur(0); } }
+  @keyframes read-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes read-ripple { to { transform: translate(-50%,-50%) scale(26); opacity: 0; } }
 
-</div>
+  @media (prefers-reduced-motion: reduce) {
+    .read-page *, .read-page *::before, .read-page *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    .read-orb { translate: none; }
+  }
+</style>
 
+<main class="read-page" id="read-page">
+  <div class="read-orb read-orb-1" aria-hidden="true"></div>
+  <div class="read-orb read-orb-2" aria-hidden="true"></div>
+  <div class="read-orb read-orb-3" aria-hidden="true"></div>
 
-  </div>
+  <div class="read-container">
+    <header class="read-header">
+      <h1 class="read-title"><%= listing.title %></h1>
+    </header>
 
-  <!-- Review Form -->
-
-  <div class="row mt-5 ratingBox">
-
-
-<div class="col-lg-8">
-
-  <div class="card shadow-sm border-0">
-
-    <div class="card-body">
-
-      <h4 class="mb-4 ">
-        Write a Review
-      </h4>
-
-      <form
-        method="POST"
-        action="/listings/<%= listing._id %>/reviews"
-        class="needs-validation"
-        novalidate
-      >
-
-        <fieldset class="starability-basic">
-
-          <legend>Rating</legend>
-
-          <input
-            type="radio"
-            id="no-rate"
-            class="input-no-rate"
-            name="rating"
-            value="0"
-            checked
-          >
-
-          <input type="radio" id="second-rate1" name="rating" value="1">
-          <label for="second-rate1">1 star</label>
-
-          <input type="radio" id="second-rate2" name="rating" value="2">
-          <label for="second-rate2">2 stars</label>
-
-          <input type="radio" id="second-rate3" name="rating" value="3">
-          <label for="second-rate3">3 stars</label>
-
-          <input type="radio" id="second-rate4" name="rating" value="4">
-          <label for="second-rate4">4 stars</label>
-
-          <input type="radio" id="second-rate5" name="rating" value="5">
-          <label for="second-rate5">5 stars</label>
-
-        </fieldset>
-
-        <div class="mt-3">
-
-          <label
-            class="form-label"
-            for="review"
-          >
-            Review
-          </label>
-
-          <textarea
-            id="review"
-            class="form-control"
-            name="review[comment]"
-            rows="4"
-            placeholder="Share your experience..."
-            required
-          ></textarea>
-
-          <div class="invalid-feedback">
-            Please enter a review.
-          </div>
-
+    <div class="read-grid">
+      <div class="read-main">
+        <!-- Gallery -->
+        <div class="read-gallery">
+          <img class="read-gallery-img" src="<%= listing.image.url %>" alt="<%= listing.title %>">
+          <div class="read-gallery-overlay" aria-hidden="true"></div>
         </div>
 
-        <button
-          class="btn btn-danger mt-3"
-          type="submit"
-        >
-          Post Review
-        </button>
+        <!-- Details Card -->
+        <article class="read-card">
+          <header class="read-card-header">
+            <div class="read-meta">
+              <div class="read-price">
+                <span class="read-amount">&#8377;<%= Number(listing.price).toLocaleString("en-IN") %></span>
+                <small>per night</small>
+              </div>
+              <div class="read-location">
+                <i class="fa-solid fa-location-dot"></i>
+                <span><%= listing.location %>, <%= listing.country %></span>
+              </div>
+            </div>
+          </header>
+          <div class="read-card-body">
+            <p class="read-description"><%= listing.description %></p>
 
-      </form>
+            <div class="read-owner">
+              <span class="read-avatar" aria-hidden="true"><%= String(listing.owner?.username || "U").charAt(0).toUpperCase() %></span>
+              <div>
+                <div class="read-owner-name"><%= listing.owner?.username || "Host" %></div>
+                <div class="read-owner-label">Host</div>
+              </div>
+            </div>
+          </div>
+        </article>
 
-    </div>
+        <!-- Owner Actions -->
+        <% if(currentUser && listing.owner && currentUser._id.equals(listing.owner._id)) { %>
+        <div class="read-divider"></div>
+        <div class="read-actions">
+          <a href="/listings/<%= listing._id %>/edit" class="read-btn read-btn-secondary">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>Edit</span>
+          </a>
+          <form method="POST" action="/listings/<%= listing._id %>/delete?_method=DELETE" onsubmit="return confirm('Delete this listing?')">
+            <button type="submit" class="read-btn read-btn-danger">
+              <i class="fa-solid fa-trash"></i>
+              <span>Delete</span>
+            </button>
+          </form>
+        </div>
+        <% } %>
 
-  </div>
+        <!-- Reviews Section -->
+        <section class="read-reviews-section" aria-labelledby="reviews-heading">
+          <h2 class="read-section-title" id="reviews-heading">Reviews</h2>
 
-</div>
+          <!-- Write Review Form -->
+          <form class="read-review-form" method="POST" action="/listings/<%= listing._id %>/reviews" novalidate>
+            <div class="read-review-form-body">
+              <h3 class="read-review-form-title">Write a Review</h3>
 
+              <fieldset class="read-rating-field">
+                <legend class="read-rating-label">Rating</legend>
+                <div class="read-starability" role="radiogroup" aria-label="Select rating">
+                  <input type="radio" id="rate-5" name="rating" value="5" required>
+                  <label for="rate-5" aria-label="5 stars"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.26-.89L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
 
-  </div>
+                  <input type="radio" id="rate-4" name="rating" value="4">
+                  <label for="rate-4" aria-label="4 stars"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.26-.89L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
 
-  <!-- Reviews -->
+                  <input type="radio" id="rate-3" name="rating" value="3">
+                  <label for="rate-3" aria-label="3 stars"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.26-.89L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
 
-  <div class="mt-5">
+                  <input type="radio" id="rate-2" name="rating" value="2">
+                  <label for="rate-2" aria-label="2 stars"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.26-.89L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
 
+                  <input type="radio" id="rate-1" name="rating" value="1">
+                  <label for="rate-1" aria-label="1 star"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.26-.89L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+                </div>
+              </fieldset>
 
-<h3 class="mb-4">
-  Reviews
-</h3>
+              <div class="read-comment-field">
+                <label class="read-comment-label" for="review">Your Review</label>
+                <div class="read-comment-input-wrap">
+                  <textarea class="read-comment-textarea" id="review" name="review[comment]" rows="4" placeholder="Share your experience..." required></textarea>
+                </div>
+                <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a review.</div>
+              </div>
 
-<div class="row g-3">
+              <button type="submit" class="read-btn read-btn-primary" style="width: 100%;">
+                <span>Post Review</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </form>
 
-  <% for(review of listing.reviews){ %>
-
-  <div class="col-md-6 col-lg-4">
-
-    <div class="card h-100 shadow-sm border-0">
-
-      <div class="card-body">
-
-        <h6 class="fw-bold">
-          @<%= review.owner.username %>
-        </h6>
-
-        <p
-          class="starability-result mb-2"
-          data-rating="<%= review.rating %>"
-        ></p>
-
-        <p class="card-text">
-          <%= review.comment %>
-        </p>
-
+          <!-- Reviews List -->
+          <% if (listing.reviews && listing.reviews.length > 0) { %>
+          <div class="read-divider"></div>
+          <div style="display: grid; gap: var(--ds-space-4);">
+            <% for(review of listing.reviews){ %>
+            <article class="read-review-card">
+              <div class="read-review-body">
+                <header class="read-review-header">
+                  <div class="read-review-author">
+                    <span class="read-review-avatar" aria-hidden="true"><%= String(review.owner?.username || "U").charAt(0).toUpperCase() %></span>
+                    <div class="read-review-name">@<%= review.owner?.username || "User" %></div>
+                  </div>
+                  <div class="read-review-rating" role="img" aria-label="<%= review.rating %> out of 5 stars">
+                    <% for(let i=1; i<=5; i++){ %>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="<%= i <= review.rating ? '#ff385c' : 'none' %>" stroke="<%= i <= review.rating ? '#ff385c' : '#dddddd' %>" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.26-.89L12 2z"/></svg>
+                    <% } %>
+                  </div>
+                </header>
+                <p class="read-review-comment"><%= review.comment %></p>
+              </div>
+              <% if(currentUser && review.owner && currentUser._id.equals(review.owner._id)) { %>
+              <footer class="read-review-footer">
+                <form method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>/delete?_method=DELETE" onsubmit="return confirm('Delete this review?')">
+                  <button type="submit" class="read-delete-btn">
+                    <i class="fa-regular fa-trash-can"></i>
+                    <span>Delete</span>
+                  </button>
+                </form>
+              </footer>
+              <% } %>
+            </article>
+            <% } %>
+          </div>
+          <% } else { %>
+          <div class="read-divider"></div>
+          <p style="color: var(--read-muted); text-align: center; padding: var(--ds-space-8);">No reviews yet. Be the first to review!</p>
+          <% } %>
+        </section>
       </div>
 
-      <div class="card-footer bg-white border-0">
-
-        <form
-          method="POST"
-          action="/listings/<%= listing._id %>/reviews/<%= review._id %>/delete?_method=DELETE"
-        >
-          <button
-            type="submit"
-            class="btn btn-sm btn-outline-danger"
-          >
-            <i class="fa-regular fa-trash-can"></i>
-          </button>
-        </form>
-
-      </div>
-
+      <!-- Sidebar with Map -->
+      <aside class="read-sidebar">
+        <div class="read-sidebar-sticky">
+          <article class="read-map-card">
+            <header class="read-map-header">
+              <h3 class="read-map-title">Location</h3>
+              <p class="read-map-location"><i class="fa-solid fa-location-dot"></i> <%= listing.location %>, <%= listing.country %></p>
+            </header>
+            <div class="read-map-container" id="map"></div>
+          </article>
+        </div>
+      </aside>
     </div>
-
   </div>
-
-  <% } %>
-
-</div>
-
-
-  </div>
-
-  <!-- Location Map -->
-
-  <div class="mt-5">
-
-
-<div class="card shadow-sm border-0">
-
-  <div class="card-body">
-
-    <h3 class="mb-3">
-      Location
-    </h3>
-
-    <p class="text-muted mb-3">
-      <i class="fa-solid fa-location-dot me-2"></i>
-      <%= listing.location %>, <%= listing.country %>
-    </p>
-
-    <div id="map"></div>
-
-  </div>
-
-</div>
-
-
-  </div>
-
-</div>
+</main>
 
 <script src="/js/map.js"></script>
+<script>
+  (() => {
+    const page = document.getElementById("read-page");
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
+
+    if (page) {
+      page.addEventListener("pointermove", (e) => {
+        const r = page.getBoundingClientRect();
+        page.style.setProperty("--px", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+        page.style.setProperty("--py", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+      });
+      page.addEventListener("pointerleave", () => {
+        page.style.setProperty("--px", 0);
+        page.style.setProperty("--py", 0);
+      });
+    }
+
+    // Star rating hover effect
+    document.querySelectorAll(".read-starability").forEach(group => {
+      const labels = group.querySelectorAll("label");
+      labels.forEach((label, idx) => {
+        label.addEventListener("mouseenter", () => {
+          labels.forEach((l, i) => {
+            if (i <= idx) { l.style.transform = "scale(1.12)"; l.querySelector("svg").style.transform = "scale(1.2) rotate(-10deg)"; }
+          });
+        });
+        label.addEventListener("mouseleave", () => {
+          labels.forEach(l => { l.style.transform = ""; l.querySelector("svg").style.transform = ""; });
+        });
+      });
+    });
+
+    // Add ripple to buttons
+    document.querySelectorAll(".read-btn-primary").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const r = btn.getBoundingClientRect();
+        const dot = document.createElement("span");
+        dot.className = "ripple";
+        dot.style.left = (e.clientX - r.left) + "px";
+        dot.style.top = (e.clientY - r.top) + "px";
+        btn.appendChild(dot);
+        dot.addEventListener("animationend", () => dot.remove());
+      });
+    });
+  })();
+</script>

@@ -22,12 +22,7 @@ module.exports.renderLogin = (req, res) => {
 };
 
 module.exports.login = (req, res) => {
-  console.log("LOGIN CONTROLLER REACHED");
-  console.log("Authenticated:", req.isAuthenticated());
-  console.log("User:", req.user);
-  console.log("Session ID:", req.sessionID);
-
-  req.flash("success", "Welcome back to Airbnb");
+  req.flash("success", "Welcome back to StayHub");
 
   let prevPath = res.locals.prevPath || "/listings";
 

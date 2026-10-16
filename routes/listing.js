@@ -33,6 +33,7 @@ router
   );
 
 router.get("/privacy", wrapAsync(controller.termsAndConditions));
+router.get("/terms", wrapAsync(controller.termsAndConditions));
 
 router
   .route("/:id")

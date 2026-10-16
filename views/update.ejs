@@ -1,233 +1,326 @@
 <% layout("/layouts/boilerplate") %>
+<%
+  const pageTitle = "Update Listing | StayHub";
+  const metaDescription = "Edit your listing details on StayHub. Update title, description, price, location, and photos.";
+  const ogTitle = "Update Listing | StayHub";
+  const ogDescription = "Edit your listing details on StayHub.";
+%>
 
-<div class="container py-5">
+<style>
+  .update-page {
+    --update-primary: #ff385c;
+    --update-primary-deep: #e61e4d;
+    --update-primary-end: #d70466;
+    --update-primary-soft: rgba(255, 56, 92, .12);
+    --update-text: #222222;
+    --update-muted: #717171;
+    --update-border: #dddddd;
+    --update-surface: #ffffff;
+    --update-background: #fff7f8;
+    --update-radius: 28px;
+    --update-ease: cubic-bezier(.22, 1, .36, 1);
+    --update-spring: cubic-bezier(.34, 1.56, .64, 1);
 
-  <div class="row justify-content-center">
+    position: relative;
+    isolation: isolate;
+    min-height: calc(100vh - 90px);
+    padding: 48px 24px 80px;
+    background:
+      radial-gradient(ellipse at 8% 4%, rgba(255, 56, 92, .13), transparent 40%),
+      radial-gradient(ellipse at 94% 60%, rgba(215, 4, 102, .09), transparent 38%),
+      var(--update-background);
+    color: var(--update-text);
+    font-family: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 
-    <div class="col-lg-8 col-xl-7 w-75">
+  .update-page *, .update-page *::before, .update-page *::after { box-sizing: border-box; }
 
-      <div class="card shadow-sm border-0 ">
+  .update-orb { position: absolute; z-index: -1; pointer-events: none; border-radius: 50%; animation: update-orb-in 1.4s var(--update-ease) both, update-float 9s ease-in-out 1.4s infinite; translate: calc(var(--px, 0) * var(--depth, 10) * 1px) calc(var(--py, 0) * var(--depth, 10) * 1px); transition: translate 1.1s var(--update-ease); }
+  .update-orb-1 { --depth: 22; width: 240px; height: 240px; top: 2%; left: -100px; background: radial-gradient(circle at 30% 30%, rgba(255, 56, 92, .20), rgba(255, 56, 92, .05)); border: 1px solid rgba(255, 56, 92, .14); }
+  .update-orb-2 { --depth: -30; width: 320px; height: 320px; top: 38%; right: -150px; background: radial-gradient(circle at 70% 30%, rgba(215, 4, 102, .15), rgba(215, 4, 102, .03)); border: 1px solid rgba(215, 4, 102, .12); animation-delay: .15s, -4s; }
+  .update-orb-3 { --depth: 46; width: 74px; height: 74px; top: 9%; right: 14%; background: linear-gradient(135deg, rgba(255, 56, 92, .30), rgba(215, 4, 102, .06)); animation-delay: .3s, -2s; }
 
-        <div class="card-body p-4">
+  .update-container { max-width: 800px; margin: 0 auto; }
 
-          <h2 class="mb-4 text-center">
-            Update Listing
-          </h2>
+  .update-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--update-surface);
+    border: 1px solid rgba(255, 255, 255, .9);
+    border-radius: var(--update-radius);
+    box-shadow: 0 28px 70px rgba(120, 30, 50, .10), 0 6px 18px rgba(120, 30, 50, .05), inset 0 1px 0 rgba(255, 255, 255, .9);
+    animation: update-appear 1s var(--update-ease) both;
+    transition: box-shadow .5s var(--update-ease);
+  }
+  .update-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 4px; background: linear-gradient(90deg, #ff385c, #e61e4d, #d70466, #e61e4d, #ff385c); background-size: 220% 100%; transform-origin: left; animation: update-line 1.1s var(--update-ease) .2s both, update-drift 7s linear 1.3s infinite; }
+  .update-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(340px circle at var(--cx, 50%) var(--cy, 0%), rgba(255, 56, 92, .07), transparent 70%); opacity: 0; transition: opacity .5s ease; }
+  .update-card:hover::after { opacity: 1; }
+  .update-card:hover { box-shadow: 0 36px 84px rgba(120, 30, 50, .14), 0 9px 24px rgba(120, 30, 50, .06); }
 
-          <form
-            method="POST"
-            action="/listings/<%= listing._id %>?_method=PUT"
-            enctype="multipart/form-data"
-            class="needs-validation"
-            novalidate
-          >
+  .update-header { padding: 40px 48px 24px; text-align: center; }
+  .update-title { margin: 0; font-size: clamp(2rem, 3.5vw, 2.5rem); font-weight: 800; letter-spacing: -.04em; line-height: 1.2; color: var(--update-text); }
+  .update-subtitle { margin: 12px 0 0; color: var(--update-muted); font-size: 1.05rem; line-height: 1.6; }
 
-            <!-- Title -->
+  .update-body { padding: 0 48px 40px; }
 
-            <div class="mb-3">
+  .update-form { display: flex; flex-direction: column; gap: 24px; }
+  .update-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 768px) { .update-row { grid-template-columns: 1fr; } }
 
-              <label
-                for="title"
-                class="form-label"
-              >
-                Title
-              </label>
+  .update-field { display: flex; flex-direction: column; gap: 9px; }
+  .update-label { color: #484848; font-size: 13px; font-weight: 700; letter-spacing: .015em; transition: color .3s ease, transform .4s var(--update-ease); }
+  .update-field:focus-within .update-label { color: var(--update-primary-deep); transform: translateX(3px); }
 
-              <input
-                id="title"
-                type="text"
-                name="listing[title]"
-                value="<%= listing.title %>"
-                placeholder="Enter title"
-                class="form-control"
-                required
-              >
+  .update-input-wrap { position: relative; }
+  .update-input-icon { position: absolute; top: 50%; left: 16px; width: 19px; height: 19px; color: #a0a0a0; transform: translateY(-50%); pointer-events: none; transition: color .3s ease, transform .5s var(--update-spring); }
+  .update-field:focus-within .update-input-icon { color: var(--update-primary); transform: translateY(-50%) scale(1.14) rotate(-6deg); }
 
-              <div class="invalid-feedback">
-                Please enter a title.
+  .update-input, .update-textarea, .update-file {
+    display: block; width: 100%; min-height: 54px; padding: 14px 16px 14px 46px;
+    color: var(--update-text); background: #fafafa; border: 1px solid var(--update-border);
+    border-radius: 15px; outline: none; font: inherit; font-size: 15px;
+    transition: border-color .3s ease, background .3s ease, box-shadow .4s var(--update-ease), transform .4s var(--update-ease);
+  }
+  .update-textarea { min-height: 140px; padding: 14px 16px; resize: vertical; font-family: inherit; }
+  .update-file { padding: 14px 16px; cursor: pointer; }
+  .update-file::file-selector-button {
+    margin-right: 16px; padding: 10px 20px; border: 0; border-radius: 12px;
+    background: var(--update-primary); color: #fff; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: background .3s ease, transform .2s ease;
+  }
+  .update-file::file-selector-button:hover { background: var(--update-primary-deep); transform: scale(1.02); }
+
+  .update-input::placeholder, .update-textarea::placeholder { color: #a8a8a8; opacity: 1; transition: opacity .3s ease, transform .4s var(--update-ease); }
+  .update-input:focus::placeholder, .update-textarea:focus::placeholder { opacity: .45; transform: translateX(5px); }
+  .update-input:hover, .update-textarea:hover, .update-file:hover { border-color: #b8b8b8; background: #fff; }
+  .update-input:focus, .update-textarea:focus, .update-file:focus {
+    background: #fff; border-color: var(--update-primary);
+    box-shadow: 0 0 0 4px var(--update-primary-soft), 0 8px 20px rgba(255, 56, 92, .08);
+    transform: translateY(-2px);
+  }
+  .update-input:user-invalid, .update-textarea:user-invalid { border-color: var(--update-primary-end); animation: update-shake .45s var(--update-ease); }
+
+  .update-field .update-file { padding-left: 16px; }
+  .update-field .update-file .update-input-icon { display: none; }
+
+  .update-current-image { margin-top: 24px; }
+  .update-current-label { display: block; margin-bottom: 12px; color: #484848; font-size: 13px; font-weight: 700; letter-spacing: .015em; }
+  .update-current-img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 16px; border: 1px solid var(--update-line); background: #fafafa; }
+
+  .update-actions { display: flex; gap: 16px; justify-content: flex-end; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--update-line); }
+  @media (max-width: 480px) { .update-actions { flex-direction: column-reverse; } .update-actions .ds-btn { width: 100%; } }
+
+  .update-btn {
+    --mx: 50%; --my: 50%;
+    position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    padding: .85rem 1.5rem; border: 0; border-radius: 16px; min-width: 160px;
+    font-weight: 700; font-size: .95rem; letter-spacing: .1px; cursor: pointer;
+    transition: box-shadow .4s var(--update-ease), transform .4s var(--update-ease);
+    isolation: isolate; overflow: hidden; -webkit-tap-highlight-color: transparent;
+  }
+  .update-btn-primary {
+    color: #fff;
+    background: radial-gradient(circle at var(--mx) var(--my), #ff385c 0%, #e61e4d 28%, #d70466 52%, #bd1e59 100%);
+    box-shadow: 0 10px 22px rgba(255, 56, 92, .28);
+  }
+  .update-btn-primary::before { content: ""; position: absolute; top: -70%; left: -35%; z-index: -1; width: 24%; height: 240%; background: rgba(255,255,255,.24); transform: rotate(22deg) translateX(-250%); transition: transform .85s var(--update-ease); pointer-events: none; }
+  .update-btn-primary:hover { box-shadow: 0 16px 32px rgba(255, 56, 92, .36); transform: translateY(-3px); }
+  .update-btn-primary:hover::before { transform: rotate(22deg) translateX(850%); }
+  .update-btn-primary:active { transform: translateY(0) scale(.97); box-shadow: 0 6px 14px rgba(255, 56, 92, .26); }
+  .update-btn-primary .ripple { position: absolute; z-index: -1; width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,.45); transform: translate(-50%,-50%) scale(0); animation: update-ripple .75s var(--update-ease) forwards; pointer-events: none; }
+  .update-btn-secondary {
+    color: var(--update-text); background: #fff; border: 1px solid var(--update-border);
+  }
+  .update-btn-secondary:hover { color: var(--update-primary); border-color: var(--update-primary); background: #fffafa; }
+  .update-btn-secondary:active { transform: scale(.97); }
+  .update-btn:focus-visible { outline: 3px solid rgba(255, 56, 92, .4); outline-offset: 3px; }
+
+  @keyframes update-appear { from { opacity: 0; transform: translateY(30px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes update-orb-in { from { opacity: 0; scale: .5; } to { opacity: 1; scale: 1; } }
+  @keyframes update-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -18px, 0); } }
+  @keyframes update-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes update-drift { from { background-position: 0 0; } to { background-position: -220% 0; } }
+  @keyframes update-ripple { to { transform: translate(-50%,-50%) scale(26); opacity: 0; } }
+  @keyframes update-shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+
+  @media (max-width: 540px) {
+    .update-page { padding: 28px 15px 60px; }
+    .update-card { border-radius: 24px; }
+    .update-header { padding: 28px 24px 16px; }
+    .update-body { padding: 0 24px 28px; }
+    .update-title { font-size: 1.8rem; }
+    .update-actions { flex-direction: column-reverse; }
+    .update-btn { width: 100%; }
+    .update-orb-1 { left: -150px; }
+    .update-orb-2 { right: -200px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .update-page *, .update-page *::before, .update-page *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    .update-orb { translate: none; }
+  }
+</style>
+
+<main class="update-page" id="update-page">
+  <div class="update-orb update-orb-1" aria-hidden="true"></div>
+  <div class="update-orb update-orb-2" aria-hidden="true"></div>
+  <div class="update-orb update-orb-3" aria-hidden="true"></div>
+
+  <div class="update-container">
+    <article class="update-card" id="update-card">
+      <header class="update-header">
+        <h1 class="update-title">Update Listing</h1>
+        <p class="update-subtitle">Make changes to your listing details below.</p>
+      </header>
+
+      <div class="update-body">
+        <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" class="update-form" id="update-form" enctype="multipart/form-data" novalidate>
+          <div class="update-field">
+            <label class="update-label" for="title">Title</label>
+            <div class="update-input-wrap">
+              <svg class="update-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+              <input class="update-input" id="title" name="listing[title]" value="<%= listing.title %>" placeholder="Enter title" type="text" required autocomplete="off">
+            </div>
+            <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a title.</div>
+          </div>
+
+          <div class="update-field">
+            <label class="update-label" for="description">Description</label>
+            <div class="update-input-wrap">
+              <svg class="update-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+              <textarea class="update-textarea" id="description" name="listing[description]" placeholder="Describe your space, amenities, and what makes it special..." rows="5" required><%= listing.description %></textarea>
+            </div>
+            <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a description.</div>
+          </div>
+
+          <div class="update-current-image">
+            <label class="update-current-label">Current Image</label>
+            <img class="update-current-img" src="<%= originalImageUrl %>" alt="Current Listing Image">
+          </div>
+
+          <div class="update-row">
+            <div class="update-field">
+              <label class="update-label" for="price">Price per night</label>
+              <div class="update-input-wrap">
+                <svg class="update-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/>
+                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+                <input class="update-input" id="price" name="listing[price]" value="<%= listing.price %>" placeholder="Enter price" type="number" min="0" step="1" required autocomplete="off">
               </div>
-
+              <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a valid price.</div>
             </div>
 
-            <!-- Description -->
-
-            <div class="mb-3">
-
-              <label
-                for="description"
-                class="form-label"
-              >
-                Description
-              </label>
-
-              <textarea
-                id="description"
-                name="listing[description]"
-                class="form-control"
-                rows="5"
-                placeholder="Enter description"
-                required
-              ><%= listing.description %></textarea>
-
-              <div class="invalid-feedback">
-                Please enter a description.
+            <div class="update-field">
+              <label class="update-label" for="image">Upload New Image</label>
+              <div class="update-input-wrap">
+                <input class="update-file" id="image" name="listing[image]" type="file" accept="image/*">
               </div>
-
             </div>
+          </div>
 
-            <!-- Current Image -->
-
-            <div class="mb-3">
-
-              <label class="form-label">
-                Current Image
-              </label>
-
-              <div>
-
-                <img
-                  src="<%= originalImageUrl %>"
-                  alt="Current Listing Image"
-                  class="img-fluid rounded shadow-sm preview-image"
-                >
-
+          <div class="update-row">
+            <div class="update-field">
+              <label class="update-label" for="location">Location</label>
+              <div class="update-input-wrap">
+                <svg class="update-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.7"/>
+                  <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.7"/>
+                </svg>
+                <input class="update-input" id="location" name="listing[location]" value="<%= listing.location %>" placeholder="Enter location (city, neighborhood)" type="text" required autocomplete="address-level2">
               </div>
-
+              <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a location.</div>
             </div>
 
-            <!-- Upload New Image -->
-
-            <div class="mb-4">
-
-              <label
-                for="image"
-                class="form-label"
-              >
-                Upload New Image
-              </label>
-
-              <input
-                id="image"
-                type="file"
-                class="form-control"
-                name="listing[image]"
-                accept="image/*"
-              >
-
-            </div>
-
-            <!-- Price + Location -->
-
-            <div class="row">
-
-              <div class="col-md-6 mb-3">
-
-                <label
-                  for="price"
-                  class="form-label"
-                >
-                  Price
-                </label>
-
-                <input
-                  id="price"
-                  type="number"
-                  min="0"
-                  name="listing[price]"
-                  value="<%= listing.price %>"
-                  placeholder="Enter price"
-                  class="form-control"
-                  required
-                >
-
-                <div class="invalid-feedback">
-                  Please enter a valid price.
-                </div>
-
+            <div class="update-field">
+              <label class="update-label" for="country">Country</label>
+              <div class="update-input-wrap">
+                <svg class="update-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.7"/>
+                  <path d="M2 12h20M12 2v20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+                <input class="update-input" id="country" name="listing[country]" value="<%= listing.country %>" placeholder="Enter country" type="text" required autocomplete="country">
               </div>
-
-              <div class="col-md-6 mb-3">
-
-                <label
-                  for="location"
-                  class="form-label"
-                >
-                  Location
-                </label>
-
-                <input
-                  id="location"
-                  type="text"
-                  name="listing[location]"
-                  value="<%= listing.location %>"
-                  placeholder="Enter location"
-                  class="form-control"
-                  required
-                >
-
-                <div class="invalid-feedback">
-                  Please enter a location.
-                </div>
-
-              </div>
-
+              <div class="invalid-feedback" style="margin-top:6px; font-size:13px; color:#c62828;">Please enter a country.</div>
             </div>
+          </div>
 
-            <!-- Country -->
-
-            <div class="mb-4">
-
-              <label
-                for="country"
-                class="form-label"
-              >
-                Country
-              </label>
-
-              <input
-                id="country"
-                type="text"
-                name="listing[country]"
-                value="<%= listing.country %>"
-                placeholder="Enter country"
-                class="form-control"
-                required
-              >
-
-              <div class="invalid-feedback">
-                Please enter a country.
-              </div>
-
-            </div>
-
-            <!-- Buttons -->
-
-            <div class="d-flex gap-2">
-
-              <button
-                type="submit"
-                class="btn btn-danger btn-outline-danger rounded-pill loginButton"
-              >
-                Update Listing
-              </button>
-
-              <a
-                href="/listings/<%= listing._id %>"
-                class="btn btn-outline-secondary rounded-pill btn-outline-secondry"
-              >
-                Cancel
-              </a>
-
-            </div>
-
-          </form>
-
-        </div>
-
+          <div class="update-actions">
+            <a href="/listings/<%= listing._id %>" class="update-btn update-btn-secondary">Cancel</a>
+            <button type="submit" class="update-btn update-btn-primary" id="update-submit">
+              <span>Update Listing</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </form>
       </div>
-
-    </div>
-
+    </article>
   </div>
+</main>
 
-</div>
+<script>
+  (() => {
+    const page = document.getElementById("update-page");
+    const card = document.getElementById("update-card");
+    const form = document.getElementById("update-form");
+    const submit = document.getElementById("update-submit");
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduceMotion) {
+      form?.addEventListener("submit", () => submit?.classList.add("is-loading"));
+      return;
+    }
+
+    if (page) {
+      page.addEventListener("pointermove", (e) => {
+        const r = page.getBoundingClientRect();
+        page.style.setProperty("--px", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+        page.style.setProperty("--py", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+      });
+      page.addEventListener("pointerleave", () => {
+        page.style.setProperty("--px", 0);
+        page.style.setProperty("--py", 0);
+      });
+    }
+
+    if (card) {
+      card.addEventListener("pointermove", (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--cx", (e.clientX - r.left) + "px");
+        card.style.setProperty("--cy", (e.clientY - r.top) + "px");
+      });
+    }
+
+    if (submit) {
+      submit.addEventListener("pointermove", (e) => {
+        const r = submit.getBoundingClientRect();
+        submit.style.setProperty("--mx", ((e.clientX - r.left) / r.width * 100).toFixed(1) + "%");
+        submit.style.setProperty("--my", ((e.clientY - r.top) / r.height * 100).toFixed(1) + "%");
+      });
+      submit.addEventListener("pointerleave", () => {
+        submit.style.setProperty("--mx", "50%");
+        submit.style.setProperty("--my", "50%");
+      });
+      submit.addEventListener("click", (e) => {
+        const r = submit.getBoundingClientRect();
+        const dot = document.createElement("span");
+        dot.className = "ripple";
+        dot.style.left = (e.clientX - r.left) + "px";
+        dot.style.top = (e.clientY - r.top) + "px";
+        submit.appendChild(dot);
+        dot.addEventListener("animationend", () => dot.remove());
+      });
+    }
+
+    form?.addEventListener("submit", () => {
+      submit?.classList.add("is-loading");
+      submit?.setAttribute("aria-busy", "true");
+    });
+  })();
+</script>
